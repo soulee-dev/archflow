@@ -306,7 +306,6 @@ _NODES = [
     "user-notifications",
     "verified-access",
     "verified-permissions",
-    "vpc",
     "vpc-lattice",
     "waf",
     "wavelength",
