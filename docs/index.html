@@ -31,6 +31,7 @@
     <nav>
       <a href="#" data-nav="home" class="active">Home</a>
       <a href="#" data-nav="playground">Playground</a>
+      <a href="#" data-nav="icons">Icons</a>
       <a href="#" data-nav="docs">Docs</a>
     </nav>
     <div class="header-right">
@@ -119,6 +120,7 @@ Client <span class="fn">>></span> Load Balancer <span class="fn">>></span> API S
       </select>
       <button class="toolbar-btn primary" id="render-btn">Render</button>
       <button class="toolbar-btn" id="download-btn">Download SVG</button>
+      <button class="toolbar-btn" id="share-btn">Share</button>
       <span id="status" class="status">Loading...</span>
     </div>
     <div class="playground-content">
@@ -139,6 +141,19 @@ Client <span class="fn">>></span> Load Balancer <span class="fn">>></span> API S
   </section>
 
   <!-- Docs -->
+  <!-- Icons -->
+  <section id="icons" class="section">
+    <div class="icons-content">
+      <div class="icons-toolbar">
+        <input type="text" class="icons-search" id="icon-search" placeholder="Search icons... (e.g. ec2, pod, bigquery)">
+        <span class="icons-stats" id="icon-stats"></span>
+      </div>
+      <div id="icons-container">
+        <div class="icons-loading">Loading icons from registry...</div>
+      </div>
+    </div>
+  </section>
+
   <section id="docs" class="section">
     <div class="docs-content">
       <h2>Documentation</h2>
@@ -242,7 +257,10 @@ Layout  Theme  Scene Graph
     </div>
   </section>
 
+  <div class="copied-toast" id="toast">Copied!</div>
+
   <!-- App -->
   <script type="module" src="js/app.js"></script>
+  <script src="js/icons.js"></script>
 </body>
 </html>

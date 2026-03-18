@@ -12,6 +12,16 @@ document.querySelectorAll('[data-nav]').forEach(link => {
   });
 });
 
+// If URL has #playground/... hash, switch to playground section
+if (location.hash.startsWith('#playground/')) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const pg = document.getElementById('playground');
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('[data-nav]').forEach(l => {
+    l.classList.toggle('active', l.getAttribute('data-nav') === 'playground');
+  });
+}
+
 // Init WASM + Playground
 async function init() {
   const statusEl = document.getElementById('status');
