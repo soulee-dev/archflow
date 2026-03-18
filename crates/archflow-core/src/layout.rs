@@ -5,7 +5,6 @@ use crate::model::DiagramIR;
 
 const NODE_WIDTH: f64 = 160.0;
 const NODE_HEIGHT: f64 = 60.0;
-const NODE_HEIGHT_WITH_ICON: f64 = 70.0;
 const H_SPACING: f64 = 120.0;
 const V_SPACING: f64 = 120.0;
 const CLUSTER_PADDING: f64 = 50.0;
@@ -47,6 +46,16 @@ pub struct LayoutResult {
 
 pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
     let is_lr = ir.metadata.direction == "LR";
+
+    // Read layout config or use defaults
+    let cfg = ir.metadata.layout.as_ref();
+    let node_w = cfg.and_then(|c| c.node_width).unwrap_or(NODE_WIDTH);
+    let node_h = cfg.and_then(|c| c.node_height).unwrap_or(NODE_HEIGHT);
+    let icon_sz = cfg.and_then(|c| c.icon_size).unwrap_or(48.0);
+    let node_h_icon = icon_sz + 26.0; // icon + label + padding
+    let h_space = cfg.and_then(|c| c.h_spacing).unwrap_or(H_SPACING);
+    let v_space = cfg.and_then(|c| c.v_spacing).unwrap_or(V_SPACING);
+
     let node_ids: Vec<&str> = ir.nodes.iter().map(|n| n.id.as_str()).collect();
     let node_set: HashSet<&str> = node_ids.iter().copied().collect();
 
@@ -110,9 +119,9 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .iter()
         .map(|n| {
             let h = if n.icon_svg.is_some() {
-                NODE_HEIGHT_WITH_ICON
+                node_h_icon
             } else {
-                NODE_HEIGHT
+                node_h
             };
             (n.id.as_str(), h)
         })
@@ -124,8 +133,8 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .map(|layer| {
             layer
                 .iter()
-                .map(|id| node_height_map.get(id).copied().unwrap_or(NODE_HEIGHT))
-                .fold(NODE_HEIGHT, f64::max)
+                .map(|id| node_height_map.get(id).copied().unwrap_or(node_h))
+                .fold(node_h, f64::max)
         })
         .collect();
 
@@ -135,24 +144,21 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
     for (rank, layer) in layers.iter().enumerate() {
         let rank_height = max_height_per_rank[rank];
         for (pos, &id) in layer.iter().enumerate() {
-            let node_h = node_height_map.get(id).copied().unwrap_or(NODE_HEIGHT);
+            let nh = node_height_map.get(id).copied().unwrap_or(node_h);
             let (x, y) = if is_lr {
-                (
-                    rank_offset,
-                    pos as f64 * (NODE_HEIGHT_WITH_ICON + V_SPACING),
-                )
+                (rank_offset, pos as f64 * (node_h_icon + v_space))
             } else {
                 (
-                    pos as f64 * (NODE_WIDTH + H_SPACING),
-                    rank_offset + (rank_height - node_h) / 2.0, // center vertically in rank
+                    pos as f64 * (node_w + h_space),
+                    rank_offset + (rank_height - nh) / 2.0,
                 )
             };
             node_positions.insert(id, (x, y));
         }
         rank_offset += if is_lr {
-            NODE_WIDTH + H_SPACING
+            node_w + h_space
         } else {
-            rank_height + V_SPACING
+            rank_height + v_space
         };
     }
 
@@ -168,12 +174,12 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
             let height = node_height_map
                 .get(n.id.as_str())
                 .copied()
-                .unwrap_or(NODE_HEIGHT);
+                .unwrap_or(node_h);
             LayoutNode {
                 id: n.id.clone(),
                 x,
                 y,
-                width: NODE_WIDTH,
+                width: node_w,
                 height,
             }
         })
@@ -187,9 +193,6 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .map(|n| n.id.as_str())
         .collect();
 
-    // Icon node dimensions: 48px icon centered in NODE_WIDTH
-    let icon_size = 48.0;
-
     // Build layout edges (simple straight lines center-to-center)
     let mut layout_edges: Vec<LayoutEdge> = ir
         .edges
@@ -201,45 +204,42 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
             let from_h = node_height_map
                 .get(e.from.as_str())
                 .copied()
-                .unwrap_or(NODE_HEIGHT);
+                .unwrap_or(node_h);
             let to_h = node_height_map
                 .get(e.to.as_str())
                 .copied()
-                .unwrap_or(NODE_HEIGHT);
+                .unwrap_or(node_h);
             let from_has_icon = icon_nodes.contains(e.from.as_str());
             let to_has_icon = icon_nodes.contains(e.to.as_str());
 
-            // For icon nodes, connect to the icon center area (48px centered)
-            // For box nodes, connect to the box edge
-            let from_cx = fx + NODE_WIDTH / 2.0;
+            let from_cx = fx + node_w / 2.0;
             let from_cy = if from_has_icon {
-                fy + icon_size / 2.0
+                fy + icon_sz / 2.0
             } else {
                 fy + from_h / 2.0
             };
-            let to_cx = tx + NODE_WIDTH / 2.0;
+            let to_cx = tx + node_w / 2.0;
             let to_cy = if to_has_icon {
-                ty + icon_size / 2.0
+                ty + icon_sz / 2.0
             } else {
                 ty + to_h / 2.0
             };
 
-            // Connect from edge of source to edge of target
             let (start, end) = if is_lr {
                 let from_right = if from_has_icon {
-                    from_cx + icon_size / 2.0
+                    from_cx + icon_sz / 2.0
                 } else {
-                    fx + NODE_WIDTH
+                    fx + node_w
                 };
                 let to_left = if to_has_icon {
-                    to_cx - icon_size / 2.0
+                    to_cx - icon_sz / 2.0
                 } else {
                     tx
                 };
                 ((from_right, from_cy), (to_left, to_cy))
             } else {
                 let from_bottom = if from_has_icon {
-                    fy + icon_size
+                    fy + icon_sz
                 } else {
                     fy + from_h
                 };
@@ -265,10 +265,7 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                 .iter()
                 .filter_map(|cid| {
                     let pos = node_positions.get(cid.as_str()).copied()?;
-                    let h = node_height_map
-                        .get(cid.as_str())
-                        .copied()
-                        .unwrap_or(NODE_HEIGHT);
+                    let h = node_height_map.get(cid.as_str()).copied().unwrap_or(node_h);
                     Some((pos.0, pos.1, h))
                 })
                 .collect();
@@ -278,8 +275,8 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                     id: c.id.clone(),
                     x: 0.0,
                     y: 0.0,
-                    width: NODE_WIDTH + CLUSTER_PADDING * 2.0,
-                    height: NODE_HEIGHT + CLUSTER_PADDING * 2.0 + CLUSTER_LABEL_HEIGHT,
+                    width: node_w + CLUSTER_PADDING * 2.0,
+                    height: node_h + CLUSTER_PADDING * 2.0 + CLUSTER_LABEL_HEIGHT,
                 };
             }
 
@@ -293,7 +290,7 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                 .fold(f64::INFINITY, f64::min);
             let max_x = child_nodes
                 .iter()
-                .map(|p| p.0 + NODE_WIDTH)
+                .map(|p| p.0 + node_w)
                 .fold(f64::NEG_INFINITY, f64::max);
             let max_y = child_nodes
                 .iter()

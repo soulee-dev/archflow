@@ -43,6 +43,7 @@ struct Parser<'a> {
     direction: String,
     theme: String,
     provider_sources: HashMap<String, Option<String>>,
+    layout: Option<crate::model::LayoutConfig>,
     nodes: Vec<NodeDef>,
     node_map: HashMap<String, usize>, // node_key -> index in nodes vec
     clusters: Vec<ClusterDef>,
@@ -58,6 +59,7 @@ impl<'a> Parser<'a> {
             direction: "TB".to_string(),
             theme: "default".to_string(),
             provider_sources: HashMap::new(),
+            layout: None,
             nodes: Vec::new(),
             node_map: HashMap::new(),
             clusters: Vec::new(),
@@ -86,6 +88,7 @@ impl<'a> Parser<'a> {
                 custom_theme: None,
                 provider_sources: self.provider_sources.clone(),
                 node_render_modes: HashMap::new(),
+                layout: self.layout.clone(),
             },
             nodes: self.nodes.clone(),
             clusters: self.clusters.clone(),
@@ -127,6 +130,32 @@ impl<'a> Parser<'a> {
         }
         if let Some(rest) = strip_prefix_ci(trimmed, "theme:") {
             self.theme = rest.trim().to_string();
+            return Ok(());
+        }
+        if let Some(rest) = strip_prefix_ci(trimmed, "icon_size:") {
+            let val: f64 = rest.trim().parse().map_err(|_| ArchflowError::ParseError {
+                line: line_num,
+                message: format!("Invalid icon_size: '{}'", rest.trim()),
+            })?;
+            self.layout.get_or_insert_with(Default::default).icon_size = Some(val);
+            return Ok(());
+        }
+        if let Some(rest) = strip_prefix_ci(trimmed, "node_width:") {
+            let val: f64 = rest.trim().parse().map_err(|_| ArchflowError::ParseError {
+                line: line_num,
+                message: format!("Invalid node_width: '{}'", rest.trim()),
+            })?;
+            self.layout.get_or_insert_with(Default::default).node_width = Some(val);
+            return Ok(());
+        }
+        if let Some(rest) = strip_prefix_ci(trimmed, "spacing:") {
+            let val: f64 = rest.trim().parse().map_err(|_| ArchflowError::ParseError {
+                line: line_num,
+                message: format!("Invalid spacing: '{}'", rest.trim()),
+            })?;
+            let cfg = self.layout.get_or_insert_with(Default::default);
+            cfg.h_spacing = Some(val);
+            cfg.v_spacing = Some(val);
             return Ok(());
         }
 

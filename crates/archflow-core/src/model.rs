@@ -27,6 +27,28 @@ pub struct Metadata {
     /// Per-provider node render modes from registry (e.g., {"aws": "icon_only"})
     #[serde(default)]
     pub node_render_modes: std::collections::HashMap<String, String>,
+    /// Layout configuration overrides
+    #[serde(default)]
+    pub layout: Option<LayoutConfig>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct LayoutConfig {
+    /// Icon size in pixels (default: 48)
+    #[serde(default)]
+    pub icon_size: Option<f64>,
+    /// Node width in pixels (default: 160)
+    #[serde(default)]
+    pub node_width: Option<f64>,
+    /// Node height in pixels for text-only nodes (default: 60)
+    #[serde(default)]
+    pub node_height: Option<f64>,
+    /// Horizontal spacing between nodes (default: 120)
+    #[serde(default)]
+    pub h_spacing: Option<f64>,
+    /// Vertical spacing between nodes (default: 120)
+    #[serde(default)]
+    pub v_spacing: Option<f64>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

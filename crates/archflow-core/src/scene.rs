@@ -57,6 +57,12 @@ pub struct SceneGraph {
 
 pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> SceneGraph {
     let padding = 60.0;
+    let icon_size = ir
+        .metadata
+        .layout
+        .as_ref()
+        .and_then(|c| c.icon_size)
+        .unwrap_or(48.0);
     let mut elements = Vec::new();
 
     // Render clusters (behind nodes)
@@ -233,7 +239,6 @@ pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> Scen
         if is_icon_only {
             if let Some(svg_content) = icon_svg {
                 // Icon-only mode: no box, just icon centered + label below
-                let icon_size = 48.0;
                 let icon_x = ln.x + padding + (ln.width - icon_size) / 2.0;
                 let icon_y = ln.y + padding;
                 children.push(SceneElement::RawSvg {
