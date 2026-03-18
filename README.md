@@ -40,7 +40,7 @@ with Diagram("Web Service", direction="LR") as d:
 ```
 
 <p align="center">
-  <img src="python/examples/web_service.svg" alt="Web Service Architecture" width="720">
+  <img src="examples/web_service.svg" alt="Web Service Architecture" width="720">
 </p>
 
 ## Why Archflow?
@@ -74,7 +74,7 @@ with Diagram("Web Service", direction="LR") as d:
 
 ```bash
 # Python library (with native Rust FFI)
-cd python && pip install maturin && maturin develop
+cd bindings/python && pip install maturin && maturin develop
 
 # CLI
 cargo build --release -p archflow-cli
@@ -150,7 +150,7 @@ with Diagram("Data Pipeline", direction="LR") as d:
 ```
 
 <p align="center">
-  <img src="python/examples/data_pipeline.svg" alt="Data Pipeline" width="720">
+  <img src="examples/data_pipeline.svg" alt="Data Pipeline" width="720">
 </p>
 
 ### AWS with Provider Icons
@@ -239,12 +239,15 @@ with Diagram("Custom", custom_theme={
                        SVG Output
 ```
 
-| Crate | Purpose |
-|-------|---------|
-| `archflow-core` | Rendering engine: layout, themes, scene graph, SVG generation |
-| `archflow-cli` | `archflow render` command |
-| `archflow-ffi` | Python native bindings via PyO3 |
-| `archflow-wasm` | WebAssembly build for the browser playground |
+| Path | Purpose |
+|------|---------|
+| `crates/archflow-core` | DSL parser, layout, themes, scene graph, SVG renderer |
+| `crates/archflow-cli` | `archflow render` command |
+| `crates/archflow-lsp` | Language Server Protocol for editor support |
+| `bindings/python-ffi` | Python native bindings via PyO3 |
+| `bindings/wasm` | WebAssembly build for the browser playground |
+| `bindings/python` | Python SDK (Diagram, Node, Cluster, providers) |
+| `apps/vscode` | VS Code extension |
 
 ### JSON IR
 
@@ -270,10 +273,10 @@ cargo test
 
 # Lint
 cargo clippy && cargo fmt --check
-ruff check python/ && ruff format --check python/
+ruff check bindings/python/ && ruff format --check bindings/python/
 
 # Build WASM for playground
-wasm-pack build crates/archflow-wasm --target web --out-dir ../../docs/pkg
+wasm-pack build bindings/wasm --target web --out-dir ../../docs/pkg
 ```
 
 ## License

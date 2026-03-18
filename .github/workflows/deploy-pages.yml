@@ -29,7 +29,7 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Build WASM
-        run: wasm-pack build crates/archflow-wasm --target web --out-dir ../../docs/pkg
+        run: wasm-pack build bindings/wasm --target web --out-dir ../../docs/pkg
 
       - name: Remove gitignore from pkg
         run: rm -f docs/pkg/.gitignore
