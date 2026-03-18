@@ -117,31 +117,106 @@ class IconResolver:
       4. Central registry (archflow-icons default CDN)
       5. Custom icon_sources from metadata
       6. Fetched results cached to disk for next time
+
+    Also applies provider styles from registry manifests:
+      - cluster_styles: stroke, fill, dasharray, corner_radius
+      - node_render_mode: "icon_only" (no box) or "default" (box + icon)
     """
 
     def __init__(self, *, registry: str = DEFAULT_REGISTRY, local_dir: Path | None = None):
         self.registry = registry
         self.local_dir = local_dir  # override for testing
+        self._manifest_cache: dict[str, dict] = {}
 
-    def _read_local(self, provider: str, icon_name: str) -> str | None:
+    def _load_manifest(self, provider: str) -> dict:
+        """Load provider manifest from local or registry. Cached per session."""
+        if provider in self._manifest_cache:
+            return self._manifest_cache[provider]
+
+        import json
+
+        # Try local
+        base = self.local_dir if self.local_dir else _local_icons_dir()
+        local_mf = base / provider / "manifest.json"
+        if local_mf.is_file():
+            manifest = json.loads(local_mf.read_text(encoding="utf-8"))
+            self._manifest_cache[provider] = manifest
+            return manifest
+
+        # Try registry
+        if self.registry:
+            url = f"{self.registry}/{provider}/manifest.json"
+            content = _fetch_url(url)
+            if content:
+                try:
+                    manifest = json.loads(content)
+                    self._manifest_cache[provider] = manifest
+                    return manifest
+                except json.JSONDecodeError:
+                    pass
+
+        self._manifest_cache[provider] = {}
+        return {}
+
+    def _apply_cluster_styles(self, ir_dict: dict) -> None:
+        """Apply cluster_styles from provider manifest to clusters without explicit style."""
+        for cluster in ir_dict.get("clusters", []):
+            provider = cluster.get("provider")
+            cluster_type = cluster.get("cluster_type")
+            if not provider or not cluster_type:
+                continue
+            # Don't override explicit style
+            if cluster.get("style"):
+                continue
+
+            manifest = self._load_manifest(provider)
+            cluster_styles = manifest.get("cluster_styles", {})
+            preset = cluster_styles.get(cluster_type)
+            if preset:
+                cluster["style"] = {k: v for k, v in preset.items() if v is not None}
+
+    def _apply_node_render_mode(self, ir_dict: dict) -> None:
+        """Set node_render_mode from provider manifest into metadata."""
+        providers_seen = set()
+        for node in ir_dict.get("nodes", []):
+            p = node.get("provider")
+            if p:
+                providers_seen.add(p)
+
+        # Collect render modes
+        render_modes = {}
+        for provider in providers_seen:
+            manifest = self._load_manifest(provider)
+            mode = manifest.get("node_render_mode")
+            if mode:
+                render_modes[provider] = mode
+
+        if render_modes:
+            metadata = ir_dict.setdefault("metadata", {})
+            metadata["node_render_modes"] = render_modes
+
+    def _read_local(self, provider: str, icon_name: str, subdir: str = "nodes") -> str | None:
         """Step 2: Local icons directory."""
         base = self.local_dir if self.local_dir else _local_icons_dir()
-        path = base / provider / "nodes" / f"{icon_name}.svg"
+        path = base / provider / subdir / f"{icon_name}.svg"
         if path.is_file():
             svg = path.read_text(encoding="utf-8")
             return _sanitize_svg(svg)
         return None
 
-    def _resolve_one(self, provider: str, icon_name: str, sources: list[str]) -> str | None:
+    def _resolve_one(
+        self, provider: str, icon_name: str, sources: list[str], subdir: str = "nodes"
+    ) -> str | None:
         """Run the full resolution chain for a single icon."""
         # Step 2: Local
-        svg = self._read_local(provider, icon_name)
+        svg = self._read_local(provider, icon_name, subdir)
         if svg:
             return svg
 
         # Step 3+4: Central registry (cache checked inside _fetch_url)
         if self.registry:
-            svg = _resolve_from_url(self.registry, provider, icon_name)
+            url = f"{self.registry}/{provider}/{subdir}/{icon_name}.svg"
+            svg = _fetch_url(url)
             if svg:
                 return svg
 
@@ -149,15 +224,20 @@ class IconResolver:
         for source in sources:
             base_url = _source_to_base_url(source)
             if base_url:
-                svg = _resolve_from_url(base_url, provider, icon_name)
+                url = f"{base_url}/{provider}/{subdir}/{icon_name}.svg"
+                svg = _fetch_url(url)
                 if svg:
                     return svg
 
         return None
 
     def resolve(self, ir_dict: dict) -> dict:
-        """Resolve all icon references in-place and return the dict."""
+        """Resolve all icon references and apply provider styles in-place."""
         sources = ir_dict.get("metadata", {}).get("icon_sources", [])
+
+        # Apply provider styles from manifests
+        self._apply_cluster_styles(ir_dict)
+        self._apply_node_render_mode(ir_dict)
 
         for node in ir_dict.get("nodes", []):
             # Step 1: Already resolved
@@ -182,5 +262,18 @@ class IconResolver:
                 svg = self._resolve_one(provider, node_id, sources)
                 if svg:
                     node["icon_svg"] = svg
+
+        # Resolve cluster icons
+        for cluster in ir_dict.get("clusters", []):
+            if cluster.get("icon_svg"):
+                continue
+
+            provider = cluster.get("provider")
+            cluster_type = cluster.get("cluster_type")
+
+            if provider and cluster_type:
+                svg = self._resolve_one(provider, cluster_type, sources, subdir="clusters")
+                if svg:
+                    cluster["icon_svg"] = svg
 
         return ir_dict

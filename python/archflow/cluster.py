@@ -39,6 +39,8 @@ class Cluster:
             d["provider"] = self.provider
         if self.cluster_type:
             d["cluster_type"] = self.cluster_type
+        if getattr(self, "icon_svg", None):
+            d["icon_svg"] = self.icon_svg
         if self.style:
             d["style"] = self.style
         return d
