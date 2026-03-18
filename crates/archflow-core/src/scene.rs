@@ -88,10 +88,7 @@ pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> Scen
 
     // Render edges (behind nodes, on top of clusters)
     for le in &layout.edges {
-        let edge_def = ir
-            .edges
-            .iter()
-            .find(|e| e.from == le.from && e.to == le.to);
+        let edge_def = ir.edges.iter().find(|e| e.from == le.from && e.to == le.to);
         let style = theme.resolve_edge_style(&edge_def.and_then(|e| e.style.clone()));
 
         let points: Vec<(f64, f64)> = le

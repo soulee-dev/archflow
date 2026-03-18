@@ -1,6 +1,6 @@
 """데이터 파이프라인 아키텍처."""
 
-from archflow import Diagram, Node, Cluster, connect
+from archflow import Diagram, Node, Cluster
 
 with Diagram("Data Pipeline", direction="LR") as d:
     with Cluster("sources", "Data Sources"):

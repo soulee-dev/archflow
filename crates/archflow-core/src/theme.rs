@@ -30,14 +30,38 @@ impl Default for Theme {
         Self {
             background: "#FAFBFC".into(),
             node_palette: vec![
-                NodeColor { fill: "#4A90D9".into(), stroke: "#3A7BC8".into() }, // blue
-                NodeColor { fill: "#6C5CE7".into(), stroke: "#5A4BD6".into() }, // purple
-                NodeColor { fill: "#00B894".into(), stroke: "#00A383".into() }, // green
-                NodeColor { fill: "#E17055".into(), stroke: "#D05F44".into() }, // orange
-                NodeColor { fill: "#FD79A8".into(), stroke: "#EC6897".into() }, // pink
-                NodeColor { fill: "#00CEC9".into(), stroke: "#00BDB8".into() }, // teal
-                NodeColor { fill: "#FDCB6E".into(), stroke: "#ECBA5D".into() }, // yellow
-                NodeColor { fill: "#636E72".into(), stroke: "#525D61".into() }, // gray
+                NodeColor {
+                    fill: "#4A90D9".into(),
+                    stroke: "#3A7BC8".into(),
+                }, // blue
+                NodeColor {
+                    fill: "#6C5CE7".into(),
+                    stroke: "#5A4BD6".into(),
+                }, // purple
+                NodeColor {
+                    fill: "#00B894".into(),
+                    stroke: "#00A383".into(),
+                }, // green
+                NodeColor {
+                    fill: "#E17055".into(),
+                    stroke: "#D05F44".into(),
+                }, // orange
+                NodeColor {
+                    fill: "#FD79A8".into(),
+                    stroke: "#EC6897".into(),
+                }, // pink
+                NodeColor {
+                    fill: "#00CEC9".into(),
+                    stroke: "#00BDB8".into(),
+                }, // teal
+                NodeColor {
+                    fill: "#FDCB6E".into(),
+                    stroke: "#ECBA5D".into(),
+                }, // yellow
+                NodeColor {
+                    fill: "#636E72".into(),
+                    stroke: "#525D61".into(),
+                }, // gray
             ],
             node_text_color: "#FFFFFF".into(),
             node_corner_radius: 10.0,
@@ -89,8 +113,12 @@ impl Theme {
         let s = style.as_ref();
         let palette_color = &self.node_palette[index % self.node_palette.len()];
         ResolvedNodeStyle {
-            fill: s.and_then(|s| s.fill.clone()).unwrap_or_else(|| palette_color.fill.clone()),
-            stroke: s.and_then(|s| s.stroke.clone()).unwrap_or_else(|| palette_color.stroke.clone()),
+            fill: s
+                .and_then(|s| s.fill.clone())
+                .unwrap_or_else(|| palette_color.fill.clone()),
+            stroke: s
+                .and_then(|s| s.stroke.clone())
+                .unwrap_or_else(|| palette_color.stroke.clone()),
             stroke_width: s.and_then(|s| s.stroke_width).unwrap_or(1.0),
             text_color: s
                 .and_then(|s| s.font_color.clone())
@@ -103,18 +131,30 @@ impl Theme {
     pub fn resolve_edge_style(&self, style: &Option<Style>) -> ResolvedEdgeStyle {
         let s = style.as_ref();
         ResolvedEdgeStyle {
-            stroke: s.and_then(|s| s.stroke.clone()).unwrap_or_else(|| self.edge_stroke.clone()),
-            stroke_width: s.and_then(|s| s.stroke_width).unwrap_or(self.edge_stroke_width),
+            stroke: s
+                .and_then(|s| s.stroke.clone())
+                .unwrap_or_else(|| self.edge_stroke.clone()),
+            stroke_width: s
+                .and_then(|s| s.stroke_width)
+                .unwrap_or(self.edge_stroke_width),
             stroke_dasharray: s.and_then(|s| s.stroke_dasharray.clone()),
         }
     }
 
-    pub fn resolve_cluster_style(&self, style: &Option<Style>, index: usize) -> ResolvedClusterStyle {
+    pub fn resolve_cluster_style(
+        &self,
+        style: &Option<Style>,
+        index: usize,
+    ) -> ResolvedClusterStyle {
         let s = style.as_ref();
         let default_fill = &self.cluster_fills[index % self.cluster_fills.len()];
         ResolvedClusterStyle {
-            fill: s.and_then(|s| s.fill.clone()).unwrap_or_else(|| default_fill.clone()),
-            stroke: s.and_then(|s| s.stroke.clone()).unwrap_or_else(|| self.cluster_stroke.clone()),
+            fill: s
+                .and_then(|s| s.fill.clone())
+                .unwrap_or_else(|| default_fill.clone()),
+            stroke: s
+                .and_then(|s| s.stroke.clone())
+                .unwrap_or_else(|| self.cluster_stroke.clone()),
             stroke_width: s.and_then(|s| s.stroke_width).unwrap_or(1.5),
             text_color: s
                 .and_then(|s| s.font_color.clone())

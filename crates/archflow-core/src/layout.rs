@@ -127,7 +127,10 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .nodes
         .iter()
         .map(|n| {
-            let (x, y) = node_positions.get(n.id.as_str()).copied().unwrap_or((0.0, 0.0));
+            let (x, y) = node_positions
+                .get(n.id.as_str())
+                .copied()
+                .unwrap_or((0.0, 0.0));
             LayoutNode {
                 id: n.id.clone(),
                 x,
@@ -154,15 +157,9 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
 
             // Connect from edge of source to edge of target
             let (start, end) = if is_lr {
-                (
-                    (fx + NODE_WIDTH, from_cy),
-                    (tx, to_cy),
-                )
+                ((fx + NODE_WIDTH, from_cy), (tx, to_cy))
             } else {
-                (
-                    (from_cx, fy + NODE_HEIGHT),
-                    (to_cx, ty),
-                )
+                ((from_cx, fy + NODE_HEIGHT), (to_cx, ty))
             };
 
             LayoutEdge {
@@ -194,8 +191,14 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                 };
             }
 
-            let min_x = child_nodes.iter().map(|p| p.0).fold(f64::INFINITY, f64::min);
-            let min_y = child_nodes.iter().map(|p| p.1).fold(f64::INFINITY, f64::min);
+            let min_x = child_nodes
+                .iter()
+                .map(|p| p.0)
+                .fold(f64::INFINITY, f64::min);
+            let min_y = child_nodes
+                .iter()
+                .map(|p| p.1)
+                .fold(f64::INFINITY, f64::min);
             let max_x = child_nodes
                 .iter()
                 .map(|p| p.0 + NODE_WIDTH)

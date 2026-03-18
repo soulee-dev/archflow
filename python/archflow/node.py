@@ -4,7 +4,15 @@ from archflow._context import get_current_diagram, get_current_cluster
 
 
 class Node:
-    def __init__(self, id: str, label: str = None, *, provider: str = None, icon: str = None, **style):
+    def __init__(
+        self,
+        id: str,
+        label: str = None,
+        *,
+        provider: str = None,
+        icon: str = None,
+        **style,
+    ):
         self.id = id
         self.label = label or id
         self.provider = provider

@@ -7,7 +7,9 @@ from archflow._context import set_current_diagram
 
 
 class Diagram:
-    def __init__(self, title: str = "Untitled", *, direction: str = "TB", theme: str = "default"):
+    def __init__(
+        self, title: str = "Untitled", *, direction: str = "TB", theme: str = "default"
+    ):
         self.title = title
         self.direction = direction
         self.theme = theme
@@ -52,6 +54,7 @@ class Diagram:
         """Render diagram to SVG string using the Rust core engine."""
         try:
             from archflow._archflow_rust import render_svg
+
             return render_svg(self.to_json())
         except ImportError:
             # Fallback: use CLI if native module not available
