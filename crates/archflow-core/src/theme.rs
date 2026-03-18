@@ -1,4 +1,4 @@
-use crate::model::{CustomThemeDef, Style};
+use crate::model::{ClusterDef, CustomThemeDef, Style};
 
 /// A color pair for nodes: fill + stroke
 #[derive(Debug, Clone)]
@@ -481,5 +481,100 @@ impl Theme {
                 .unwrap_or_else(|| self.cluster_text_color.clone()),
             corner_radius: self.cluster_corner_radius,
         }
+    }
+
+    /// Resolve cluster style with provider/cluster_type awareness.
+    /// Provider presets override theme defaults but are overridden by explicit styles.
+    pub fn resolve_cluster_style_with_provider(
+        &self,
+        cluster_def: &ClusterDef,
+        index: usize,
+    ) -> ResolvedClusterStyle {
+        let preset = provider_cluster_preset(
+            cluster_def.provider.as_deref(),
+            cluster_def.cluster_type.as_deref(),
+        );
+
+        let s = cluster_def.style.as_ref();
+        let default_fill = &self.cluster_fills[index % self.cluster_fills.len()];
+
+        ResolvedClusterStyle {
+            fill: s
+                .and_then(|s| s.fill.clone())
+                .or_else(|| preset.as_ref().map(|p| p.fill.clone()))
+                .unwrap_or_else(|| default_fill.clone()),
+            stroke: s
+                .and_then(|s| s.stroke.clone())
+                .or_else(|| preset.as_ref().map(|p| p.stroke.clone()))
+                .unwrap_or_else(|| self.cluster_stroke.clone()),
+            stroke_width: s
+                .and_then(|s| s.stroke_width)
+                .or_else(|| preset.as_ref().map(|p| p.stroke_width))
+                .unwrap_or(1.5),
+            text_color: s
+                .and_then(|s| s.font_color.clone())
+                .or_else(|| preset.as_ref().map(|p| p.text_color.clone()))
+                .unwrap_or_else(|| self.cluster_text_color.clone()),
+            corner_radius: self.cluster_corner_radius,
+        }
+    }
+}
+
+/// Built-in provider cluster style presets
+struct ClusterPreset {
+    fill: String,
+    stroke: String,
+    stroke_width: f64,
+    text_color: String,
+}
+
+fn provider_cluster_preset(
+    provider: Option<&str>,
+    cluster_type: Option<&str>,
+) -> Option<ClusterPreset> {
+    match (provider, cluster_type) {
+        (Some("aws"), Some("region")) => Some(ClusterPreset {
+            fill: "rgba(255, 153, 0, 0.06)".into(),
+            stroke: "#FF9900".into(),
+            stroke_width: 2.0,
+            text_color: "#CC7A00".into(),
+        }),
+        (Some("aws"), Some("vpc")) => Some(ClusterPreset {
+            fill: "rgba(0, 164, 166, 0.06)".into(),
+            stroke: "#00A4A6".into(),
+            stroke_width: 1.5,
+            text_color: "#007F80".into(),
+        }),
+        (Some("aws"), Some("subnet")) => Some(ClusterPreset {
+            fill: "rgba(0, 164, 166, 0.03)".into(),
+            stroke: "#00A4A6".into(),
+            stroke_width: 1.0,
+            text_color: "#007F80".into(),
+        }),
+        (Some("gcp"), Some("region")) => Some(ClusterPreset {
+            fill: "rgba(66, 133, 244, 0.06)".into(),
+            stroke: "#4285F4".into(),
+            stroke_width: 2.0,
+            text_color: "#3367D6".into(),
+        }),
+        (Some("gcp"), Some("vpc")) => Some(ClusterPreset {
+            fill: "rgba(52, 168, 83, 0.06)".into(),
+            stroke: "#34A853".into(),
+            stroke_width: 1.5,
+            text_color: "#2D8E47".into(),
+        }),
+        (Some("k8s"), Some("cluster")) => Some(ClusterPreset {
+            fill: "rgba(50, 108, 229, 0.06)".into(),
+            stroke: "#326CE5".into(),
+            stroke_width: 2.0,
+            text_color: "#2957C0".into(),
+        }),
+        (Some("k8s"), Some("namespace")) => Some(ClusterPreset {
+            fill: "rgba(50, 108, 229, 0.03)".into(),
+            stroke: "#326CE5".into(),
+            stroke_width: 1.0,
+            text_color: "#2957C0".into(),
+        }),
+        _ => None,
     }
 }

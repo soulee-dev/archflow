@@ -14,7 +14,12 @@
       "properties": {
         "title": { "type": "string" },
         "direction": { "type": "string", "enum": ["TB", "LR"], "default": "TB" },
-        "theme": { "type": "string", "default": "default" }
+        "theme": { "type": "string", "default": "default" },
+        "icon_sources": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Icon sources for resolution (e.g., 'github:user/repo', 'https://...')"
+        }
       }
     },
     "nodes": {
@@ -27,6 +32,7 @@
           "label": { "type": "string" },
           "provider": { "type": "string" },
           "icon": { "type": "string" },
+          "icon_svg": { "type": "string", "description": "Resolved inline SVG content for the icon" },
           "style": { "$ref": "#/$defs/style" }
         }
       }
@@ -43,6 +49,8 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "provider": { "type": "string", "description": "Provider name (e.g., 'aws', 'gcp')" },
+          "cluster_type": { "type": "string", "description": "Cluster type (e.g., 'region', 'vpc', 'subnet')" },
           "style": { "$ref": "#/$defs/style" }
         }
       }

@@ -192,4 +192,76 @@ mod tests {
         let svg = render_svg(ir).unwrap();
         assert!(svg.contains("<svg"));
     }
+
+    #[test]
+    fn test_node_with_icon_svg() {
+        let ir = r##"{
+            "version": "1.0.0",
+            "nodes": [
+                { "id": "ec2", "label": "EC2", "icon_svg": "<circle cx=\"16\" cy=\"16\" r=\"12\" fill=\"#FF9900\"/>" },
+                { "id": "rds", "label": "RDS" }
+            ],
+            "edges": [{ "from": "ec2", "to": "rds" }]
+        }"##;
+        let svg = render_svg(ir).unwrap();
+        assert!(svg.contains("EC2"));
+        assert!(svg.contains("RDS"));
+        // Icon node should have embedded SVG
+        assert!(svg.contains("<svg x="));
+        assert!(svg.contains("fill=\"#FF9900\""));
+    }
+
+    #[test]
+    fn test_cluster_with_provider() {
+        let ir = r#"{
+            "version": "1.0.0",
+            "nodes": [
+                { "id": "web", "label": "Web Server" },
+                { "id": "db", "label": "Database" }
+            ],
+            "clusters": [
+                { "id": "vpc", "label": "VPC", "children": ["web", "db"], "provider": "aws", "cluster_type": "vpc" }
+            ],
+            "edges": [{ "from": "web", "to": "db" }]
+        }"#;
+        let svg = render_svg(ir).unwrap();
+        assert!(svg.contains("VPC"));
+        // AWS VPC preset stroke color
+        assert!(svg.contains("#00A4A6"));
+    }
+
+    #[test]
+    fn test_mixed_icon_and_plain_nodes() {
+        let ir = r#"{
+            "version": "1.0.0",
+            "nodes": [
+                { "id": "a", "label": "With Icon", "icon_svg": "<rect width=\"24\" height=\"24\" fill=\"blue\"/>" },
+                { "id": "b", "label": "Plain" },
+                { "id": "c", "label": "Also Plain" }
+            ],
+            "edges": [
+                { "from": "a", "to": "b" },
+                { "from": "b", "to": "c" }
+            ]
+        }"#;
+        let svg = render_svg(ir).unwrap();
+        assert!(svg.contains("With Icon"));
+        assert!(svg.contains("Plain"));
+        assert!(svg.contains("Also Plain"));
+    }
+
+    #[test]
+    fn test_icon_sources_in_metadata() {
+        let ir = r#"{
+            "version": "1.0.0",
+            "metadata": {
+                "icon_sources": ["github:archflow/icons", "https://example.com/icons"]
+            },
+            "nodes": [{ "id": "a", "label": "A" }],
+            "edges": []
+        }"#;
+        // Should parse and render without error
+        let svg = render_svg(ir).unwrap();
+        assert!(svg.contains("<svg"));
+    }
 }

@@ -32,6 +32,13 @@ pub enum SceneElement {
         stroke_dasharray: Option<String>,
         marker_end: bool,
     },
+    RawSvg {
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        content: String,
+    },
     Group {
         id: String,
         children: Vec<SceneElement>,
@@ -54,7 +61,15 @@ pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> Scen
     // Render clusters (behind nodes)
     for (ci, lc) in layout.clusters.iter().enumerate() {
         let cluster_def = ir.clusters.iter().find(|c| c.id == lc.id);
-        let style = theme.resolve_cluster_style(&cluster_def.and_then(|c| c.style.clone()), ci);
+        let style = if let Some(cd) = cluster_def {
+            if cd.provider.is_some() || cd.cluster_type.is_some() {
+                theme.resolve_cluster_style_with_provider(cd, ci)
+            } else {
+                theme.resolve_cluster_style(&cd.style.clone(), ci)
+            }
+        } else {
+            theme.resolve_cluster_style(&None, ci)
+        };
         let label = cluster_def.map(|c| c.label.as_str()).unwrap_or(&lc.id);
 
         let children = vec![
@@ -171,20 +186,45 @@ pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> Scen
         let node_def = ir.nodes.iter().find(|n| n.id == ln.id);
         let style = theme.resolve_node_style(&node_def.and_then(|n| n.style.clone()), ni);
         let label = node_def.map(|n| n.label.as_str()).unwrap_or(&ln.id);
+        let icon_svg = node_def.and_then(|n| n.icon_svg.as_ref());
 
-        let children = vec![
-            SceneElement::Rect {
-                x: ln.x + padding,
-                y: ln.y + padding,
-                width: ln.width,
-                height: ln.height,
-                rx: style.corner_radius,
-                fill: style.fill,
-                stroke: style.stroke,
-                stroke_width: style.stroke_width,
-                shadow: style.shadow,
-            },
-            SceneElement::Text {
+        let mut children = vec![SceneElement::Rect {
+            x: ln.x + padding,
+            y: ln.y + padding,
+            width: ln.width,
+            height: ln.height,
+            rx: style.corner_radius,
+            fill: style.fill,
+            stroke: style.stroke,
+            stroke_width: style.stroke_width,
+            shadow: style.shadow,
+        }];
+
+        if let Some(svg_content) = icon_svg {
+            // Icon node: icon at top, label at bottom
+            let icon_size = 32.0;
+            let icon_x = ln.x + padding + (ln.width - icon_size) / 2.0;
+            let icon_y = ln.y + padding + 8.0;
+            children.push(SceneElement::RawSvg {
+                x: icon_x,
+                y: icon_y,
+                width: icon_size,
+                height: icon_size,
+                content: svg_content.clone(),
+            });
+            children.push(SceneElement::Text {
+                x: ln.x + padding + ln.width / 2.0,
+                y: ln.y + padding + ln.height - 12.0,
+                content: label.to_string(),
+                font_size: theme.font_size,
+                font_family: theme.font_family.clone(),
+                fill: style.text_color,
+                anchor: "middle".to_string(),
+                font_weight: "600".to_string(),
+            });
+        } else {
+            // Text-only node: label centered
+            children.push(SceneElement::Text {
                 x: ln.x + padding + ln.width / 2.0,
                 y: ln.y + padding + ln.height / 2.0 + 1.0,
                 content: label.to_string(),
@@ -193,8 +233,8 @@ pub fn build_scene(layout: &LayoutResult, ir: &DiagramIR, theme: &Theme) -> Scen
                 fill: style.text_color,
                 anchor: "middle".to_string(),
                 font_weight: "600".to_string(),
-            },
-        ];
+            });
+        }
 
         elements.push(SceneElement::Group {
             id: ln.id.clone(),

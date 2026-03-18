@@ -5,6 +5,7 @@ use crate::model::DiagramIR;
 
 const NODE_WIDTH: f64 = 160.0;
 const NODE_HEIGHT: f64 = 60.0;
+const NODE_HEIGHT_WITH_ICON: f64 = 80.0;
 const H_SPACING: f64 = 120.0;
 const V_SPACING: f64 = 120.0;
 const CLUSTER_PADDING: f64 = 50.0;
@@ -103,23 +104,56 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         layer.sort();
     }
 
-    // Assign positions
+    // Build per-node height map based on icon_svg presence
+    let node_height_map: HashMap<&str, f64> = ir
+        .nodes
+        .iter()
+        .map(|n| {
+            let h = if n.icon_svg.is_some() {
+                NODE_HEIGHT_WITH_ICON
+            } else {
+                NODE_HEIGHT
+            };
+            (n.id.as_str(), h)
+        })
+        .collect();
+
+    // Compute max height per rank (for consistent row/column spacing)
+    let max_height_per_rank: Vec<f64> = layers
+        .iter()
+        .map(|layer| {
+            layer
+                .iter()
+                .map(|id| node_height_map.get(id).copied().unwrap_or(NODE_HEIGHT))
+                .fold(NODE_HEIGHT, f64::max)
+        })
+        .collect();
+
+    // Assign positions using cumulative rank offsets for per-rank height
     let mut node_positions: HashMap<&str, (f64, f64)> = HashMap::new();
+    let mut rank_offset = 0.0;
     for (rank, layer) in layers.iter().enumerate() {
+        let rank_height = max_height_per_rank[rank];
         for (pos, &id) in layer.iter().enumerate() {
+            let node_h = node_height_map.get(id).copied().unwrap_or(NODE_HEIGHT);
             let (x, y) = if is_lr {
                 (
-                    rank as f64 * (NODE_WIDTH + H_SPACING),
-                    pos as f64 * (NODE_HEIGHT + V_SPACING),
+                    rank_offset,
+                    pos as f64 * (NODE_HEIGHT_WITH_ICON + V_SPACING),
                 )
             } else {
                 (
                     pos as f64 * (NODE_WIDTH + H_SPACING),
-                    rank as f64 * (NODE_HEIGHT + V_SPACING),
+                    rank_offset + (rank_height - node_h) / 2.0, // center vertically in rank
                 )
             };
             node_positions.insert(id, (x, y));
         }
+        rank_offset += if is_lr {
+            NODE_WIDTH + H_SPACING
+        } else {
+            rank_height + V_SPACING
+        };
     }
 
     // Build layout nodes
@@ -131,12 +165,16 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                 .get(n.id.as_str())
                 .copied()
                 .unwrap_or((0.0, 0.0));
+            let height = node_height_map
+                .get(n.id.as_str())
+                .copied()
+                .unwrap_or(NODE_HEIGHT);
             LayoutNode {
                 id: n.id.clone(),
                 x,
                 y,
                 width: NODE_WIDTH,
-                height: NODE_HEIGHT,
+                height,
             }
         })
         .collect();
@@ -149,17 +187,25 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .map(|e| {
             let (fx, fy) = node_positions[e.from.as_str()];
             let (tx, ty) = node_positions[e.to.as_str()];
+            let from_h = node_height_map
+                .get(e.from.as_str())
+                .copied()
+                .unwrap_or(NODE_HEIGHT);
+            let to_h = node_height_map
+                .get(e.to.as_str())
+                .copied()
+                .unwrap_or(NODE_HEIGHT);
 
             let from_cx = fx + NODE_WIDTH / 2.0;
-            let from_cy = fy + NODE_HEIGHT / 2.0;
+            let from_cy = fy + from_h / 2.0;
             let to_cx = tx + NODE_WIDTH / 2.0;
-            let to_cy = ty + NODE_HEIGHT / 2.0;
+            let to_cy = ty + to_h / 2.0;
 
             // Connect from edge of source to edge of target
             let (start, end) = if is_lr {
                 ((fx + NODE_WIDTH, from_cy), (tx, to_cy))
             } else {
-                ((from_cx, fy + NODE_HEIGHT), (to_cx, ty))
+                ((from_cx, fy + from_h), (to_cx, ty))
             };
 
             LayoutEdge {
@@ -175,10 +221,17 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
         .clusters
         .iter()
         .map(|c| {
-            let child_nodes: Vec<(f64, f64)> = c
+            let child_nodes: Vec<(f64, f64, f64)> = c
                 .children
                 .iter()
-                .filter_map(|cid| node_positions.get(cid.as_str()).copied())
+                .filter_map(|cid| {
+                    let pos = node_positions.get(cid.as_str()).copied()?;
+                    let h = node_height_map
+                        .get(cid.as_str())
+                        .copied()
+                        .unwrap_or(NODE_HEIGHT);
+                    Some((pos.0, pos.1, h))
+                })
                 .collect();
 
             if child_nodes.is_empty() {
@@ -205,7 +258,7 @@ pub fn compute_layout(ir: &DiagramIR) -> Result<LayoutResult, ArchflowError> {
                 .fold(f64::NEG_INFINITY, f64::max);
             let max_y = child_nodes
                 .iter()
-                .map(|p| p.1 + NODE_HEIGHT)
+                .map(|p| p.1 + p.2) // use per-node height
                 .fold(f64::NEG_INFINITY, f64::max);
 
             LayoutCluster {

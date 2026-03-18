@@ -21,6 +21,9 @@ pub struct Metadata {
     pub theme: String,
     #[serde(default)]
     pub custom_theme: Option<CustomThemeDef>,
+    /// Icon sources for resolution (e.g., "github:user/repo", "https://...")
+    #[serde(default)]
+    pub icon_sources: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -73,6 +76,9 @@ pub struct NodeDef {
     pub provider: Option<String>,
     #[serde(default)]
     pub icon: Option<String>,
+    /// Resolved inline SVG content for the icon (set by Python/JS resolver before rendering)
+    #[serde(default)]
+    pub icon_svg: Option<String>,
     #[serde(default)]
     pub style: Option<Style>,
 }
@@ -82,6 +88,12 @@ pub struct ClusterDef {
     pub id: String,
     pub label: String,
     pub children: Vec<String>,
+    /// Provider name (e.g., "aws", "gcp") for provider-aware styling
+    #[serde(default)]
+    pub provider: Option<String>,
+    /// Cluster type (e.g., "region", "vpc", "subnet") for style presets
+    #[serde(default)]
+    pub cluster_type: Option<String>,
     #[serde(default)]
     pub style: Option<Style>,
 }

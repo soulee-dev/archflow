@@ -76,6 +76,20 @@ fn render_element(buf: &mut String, element: &SceneElement, indent: usize) {
                  stroke-linecap=\"round\"{dash}{marker}/>\n"
             ));
         }
+        SceneElement::RawSvg {
+            x,
+            y,
+            width,
+            height,
+            content,
+        } => {
+            buf.push_str(&format!(
+                "{pad}<svg x=\"{x}\" y=\"{y}\" width=\"{width}\" height=\"{height}\">\n"
+            ));
+            buf.push_str(content);
+            buf.push('\n');
+            buf.push_str(&format!("{pad}</svg>\n"));
+        }
         SceneElement::Group { id, children } => {
             buf.push_str(&format!("{pad}<g id=\"{id}\">\n"));
             for child in children {
