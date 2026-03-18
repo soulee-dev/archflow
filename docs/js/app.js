@@ -1,5 +1,3 @@
-import { initPlayground } from './playground.js';
-
 // Navigation
 document.querySelectorAll('[data-nav]').forEach(link => {
   link.addEventListener('click', (e) => {
@@ -22,21 +20,49 @@ if (location.hash.startsWith('#playground/')) {
   });
 }
 
-// Init WASM + Playground
+// Load Monaco Editor via AMD loader, then init WASM + Playground
+function loadMonaco() {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js';
+    script.onload = () => {
+      // Monaco's AMD require — save reference before it can conflict
+      const monacoRequire = window.require;
+      monacoRequire.config({
+        paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' },
+      });
+      monacoRequire(['vs/editor/editor.main'], () => resolve());
+    };
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
 async function init() {
   const statusEl = document.getElementById('status');
   if (statusEl) {
-    statusEl.textContent = 'Loading WASM...';
+    statusEl.textContent = 'Loading editor...';
   }
 
   try {
+    // Load Monaco first
+    await loadMonaco();
+
+    if (statusEl) {
+      statusEl.textContent = 'Loading WASM...';
+    }
+
+    // Load WASM
     const wasm = await import('../pkg/archflow_wasm.js');
     await wasm.default();
+
+    // Init playground (dynamic import to ensure Monaco globals are ready)
+    const { initPlayground } = await import('./playground.js');
     initPlayground(wasm);
   } catch (err) {
-    console.error('WASM load failed:', err);
+    console.error('Init failed:', err);
     if (statusEl) {
-      statusEl.textContent = 'Failed to load WASM engine: ' + err.message;
+      statusEl.textContent = 'Failed to load: ' + err.message;
       statusEl.className = 'status error';
     }
   }

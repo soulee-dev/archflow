@@ -1,4 +1,5 @@
 import { examples } from './examples.js';
+import { registerArchflowLanguage, setupDiagnostics } from './monaco-archflow.js';
 
 let editor = null;
 let renderSvgFn = null;   // wasm.render_svg (JSON → SVG)
@@ -19,7 +20,6 @@ let startY = 0;
 const iconCache = new Map();
 
 // Central registry — always tried as fallback (same as Python resolver)
-// In local dev, icons are served from the same origin via browser-sync --serveStatic
 const DEFAULT_REGISTRY = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
   ? location.origin
   : 'https://raw.githubusercontent.com/soulee-dev/archflow-icons/main';
@@ -29,22 +29,35 @@ export function initPlayground(wasmModule) {
   renderDslFn = wasmModule.render_dsl;
   parseDslFn = wasmModule.parse_dsl;
 
-  // Init CodeMirror
-  const textarea = document.getElementById('editor-textarea');
-  editor = CodeMirror.fromTextArea(textarea, {
-    mode: 'archflow',
-    theme: 'material-darker',
-    lineNumbers: true,
-    matchBrackets: true,
-    autoCloseBrackets: true,
+  // Register archflow language for Monaco
+  registerArchflowLanguage(monaco);
+
+  // Determine initial content
+  const shared = loadFromURL();
+  const initialValue = shared || examples[0].dsl;
+
+  // Init Monaco Editor
+  editor = monaco.editor.create(document.getElementById('editor-container'), {
+    value: initialValue,
+    language: 'archflow',
+    theme: 'vs-dark',
+    fontSize: 13,
+    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+    minimap: { enabled: false },
+    lineNumbers: 'on',
+    scrollBeyondLastLine: false,
+    automaticLayout: true,
     tabSize: 2,
-    lineWrapping: true,
+    wordWrap: 'on',
+    bracketPairColorization: { enabled: true },
+    padding: { top: 8, bottom: 8 },
   });
 
-  editor.setSize('100%', '100%');
+  // Setup diagnostics (error markers from WASM parse_dsl)
+  setupDiagnostics(monaco, editor, parseDslFn);
 
   // Auto-render on change
-  editor.on('change', () => {
+  editor.onDidChangeModelContent(() => {
     clearTimeout(renderTimeout);
     renderTimeout = setTimeout(render, 300);
   });
@@ -101,18 +114,9 @@ export function initPlayground(wasmModule) {
   panel.addEventListener('mousedown', onMouseDown);
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
-
-  // Load from shared URL or first example
-  const shared = loadFromURL();
-  if (shared) {
-    editor.setValue(shared);
-  } else {
-    editor.setValue(examples[0].dsl);
-  }
 }
 
 // ─── Icon & Style Resolution ───
-// Loads provider manifests, applies cluster_styles, resolves icon SVGs
 
 const manifestCache = new Map();
 
@@ -146,14 +150,11 @@ async function fetchManifest(provider, baseUrl) {
 }
 
 async function resolveIcons(ir) {
-  // Only resolve providers declared with "use"
   const providerSources = (ir.metadata && ir.metadata.provider_sources) || {};
   const declaredProviders = new Set(Object.keys(providerSources));
 
-  // No "use" declarations → nothing to resolve
   if (declaredProviders.size === 0) return ir;
 
-  // Resolve base URLs and load manifests in parallel
   const providerBaseUrls = {};
   const manifests = {};
   await Promise.all([...declaredProviders].map(async p => {
@@ -236,7 +237,6 @@ async function fetchIcon(url) {
       return null;
     }
     let svg = await resp.text();
-    // Sanitize: remove script tags and event handlers
     svg = svg.replace(/<script[\s\S]*?<\/script>/gi, '');
     svg = svg.replace(/\bon\w+\s*=\s*["'][^"']*["']/gi, '');
     iconCache.set(url, svg);
@@ -270,7 +270,6 @@ function zoom(factor, cx, cy) {
   const newScale = Math.min(Math.max(scale * factor, 0.1), 5);
   const ratio = newScale / scale;
 
-  // Zoom toward cursor position
   panX = cx - ratio * (cx - panX);
   panY = cy - ratio * (cy - panY);
   scale = newScale;
@@ -293,7 +292,7 @@ function fitToView() {
   const ph = panel.clientHeight - 48;
 
   scale = Math.min(pw / vw, ph / vh, 1.5);
-  scale = Math.max(scale, 0.1); // never go below 10%
+  scale = Math.max(scale, 0.1);
   panX = (panel.clientWidth - vw * scale) / 2;
   panY = (panel.clientHeight - vh * scale) / 2;
 
@@ -317,7 +316,6 @@ function onWheel(e) {
 }
 
 function onMouseDown(e) {
-  // Middle-click or left-click on panel background
   if (e.button === 1 || (e.button === 0 && (e.target.closest('.preview-panel') && !e.target.closest('.zoom-controls')))) {
     isPanning = true;
     startX = e.clientX - panX;
@@ -345,7 +343,6 @@ function onMouseUp() {
 // ─── Theme ───
 
 function applyTheme(themeName) {
-  // Just re-render — the render function reads the dropdown value
   render();
 }
 
@@ -357,11 +354,11 @@ function toggleMode() {
 
   if (mode === 'dsl') {
     try {
-      // Use Rust parser to convert DSL → JSON
       const json = parseDslFn(content);
       const ir = JSON.parse(json);
       mode = 'json';
-      editor.setOption('mode', 'application/json');
+      const model = editor.getModel();
+      monaco.editor.setModelLanguage(model, 'json');
       editor.setValue(JSON.stringify(ir, null, 2));
       modeBtn.textContent = 'JSON';
       modeBtn.title = 'Switch to DSL mode';
@@ -370,7 +367,8 @@ function toggleMode() {
     }
   } else {
     mode = 'dsl';
-    editor.setOption('mode', 'archflow');
+    const model = editor.getModel();
+    monaco.editor.setModelLanguage(model, 'archflow');
     const select = document.getElementById('example-select');
     const ex = examples[select.value];
     if (ex) {
@@ -391,21 +389,17 @@ async function render() {
   try {
     let svg;
     if (mode === 'dsl') {
-      // Parse DSL → IR JSON via Rust, then resolve icons, then render
       const irJson = parseDslFn(content);
       const ir = JSON.parse(irJson);
 
-      // Apply theme from dropdown
       const selectedTheme = document.getElementById('theme-select').value;
       if (!ir.metadata) ir.metadata = {};
       ir.metadata.theme = selectedTheme;
 
-      // Resolve icons for providers declared with "use"
       await resolveIcons(ir);
 
       svg = renderSvgFn(JSON.stringify(ir));
     } else {
-      // JSON mode: parse, apply theme, resolve, render
       const ir = JSON.parse(content);
       const selectedTheme = document.getElementById('theme-select').value;
       if (!ir.metadata) ir.metadata = {};
@@ -419,13 +413,11 @@ async function render() {
     preview.innerHTML = svg;
     setStatus('Ready', false);
 
-    // Keep SVG at native size for proper pan/zoom
     const svgEl = preview.querySelector('svg');
     if (svgEl) {
       svgEl.style.display = 'block';
     }
 
-    // Fit after SVG is fully laid out
     requestAnimationFrame(() => requestAnimationFrame(fitToView));
   } catch (e) {
     setStatus(e.toString(), true);
@@ -471,11 +463,9 @@ function shareDiagram() {
   navigator.clipboard.writeText(url).then(() => {
     setStatus('Share URL copied to clipboard!', false);
   }).catch(() => {
-    // Fallback: show in prompt
     prompt('Share URL:', url);
   });
 
-  // Also update browser URL without reload
   history.replaceState(null, '', `#playground/${mode}/${encoded}`);
 }
 
@@ -493,7 +483,6 @@ function loadFromURL() {
   try {
     const content = decodeContent(encoded);
 
-    // Switch to correct mode
     if (urlMode === 'json' && mode === 'dsl') {
       mode = 'json';
       const modeBtn = document.getElementById('mode-btn');

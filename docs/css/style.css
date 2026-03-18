@@ -281,11 +281,9 @@ nav a.active { background: var(--primary); color: var(--white); }
   border-right: 1px solid var(--border);
   overflow: hidden;
 }
-.editor-panel .CodeMirror {
+#editor-container {
   flex: 1;
-  height: auto !important;
-  font-family: var(--mono);
-  font-size: 13px;
+  min-height: 0;
 }
 
 .preview-panel {
@@ -509,14 +507,7 @@ nav a.active { background: var(--primary); color: var(--white); }
 }
 .schema-table code { font-size: 12px; }
 
-/* ─── Archflow DSL Syntax Colors (material-darker) ─── */
-.cm-s-material-darker .cm-keyword { color: #C792EA; font-weight: 600; }
-.cm-s-material-darker .cm-operator { color: #89DDFF; font-weight: 700; }
-.cm-s-material-darker .cm-comment { color: #546E7A; font-style: italic; }
-.cm-s-material-darker .cm-string { color: #C3E88D; }
-.cm-s-material-darker .cm-def { color: #82AAFF; }
-.cm-s-material-darker .cm-variable-2 { color: #EEFFFF; }
-.cm-s-material-darker .cm-bracket { color: #FFCB6B; }
+/* ─── Monaco Editor Overrides ─── */
 
 /* ─── Responsive ─── */
 @media (max-width: 768px) {
