@@ -23,49 +23,6 @@
  * Provider syntax: provider:type Label (e.g., aws:EC2 Web Server)
  */
 
-// Built-in mini icon SVGs for playground (no external fetch needed)
-const BUILTIN_ICONS = {
-  aws: {
-    ec2:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#FF9900"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff" font-family="sans-serif">EC2</text>',
-    rds:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#3B48CC"/><text x="16" y="20" text-anchor="middle" font-size="10" font-weight="bold" fill="#fff" font-family="sans-serif">RDS</text>',
-    s3:           '<rect x="2" y="2" width="28" height="28" rx="4" fill="#3F8624"/><text x="16" y="20" text-anchor="middle" font-size="11" font-weight="bold" fill="#fff" font-family="sans-serif">S3</text>',
-    lambda:       '<rect x="2" y="2" width="28" height="28" rx="4" fill="#FF9900"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">λ</text>',
-    elb:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#8C4FFF"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">ELB</text>',
-    sqs:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#FF4F8B"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">SQS</text>',
-    sns:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#FF4F8B"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">SNS</text>',
-    dynamodb:     '<rect x="2" y="2" width="28" height="28" rx="4" fill="#3B48CC"/><text x="16" y="20" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff" font-family="sans-serif">DDB</text>',
-    elasticache:  '<rect x="2" y="2" width="28" height="28" rx="4" fill="#3B48CC"/><text x="16" y="20" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff" font-family="sans-serif">Cache</text>',
-    cloudfront:   '<rect x="2" y="2" width="28" height="28" rx="4" fill="#8C4FFF"/><text x="16" y="20" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff" font-family="sans-serif">CDN</text>',
-  },
-  gcp: {
-    gce:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#4285F4"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">GCE</text>',
-    gcs:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#4285F4"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">GCS</text>',
-    cloudsql:     '<rect x="2" y="2" width="28" height="28" rx="4" fill="#4285F4"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">SQL</text>',
-    gke:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#4285F4"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">GKE</text>',
-  },
-  k8s: {
-    pod:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#326CE5"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">Pod</text>',
-    service:      '<rect x="2" y="2" width="28" height="28" rx="14" fill="#326CE5"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">Svc</text>',
-    ingress:      '<rect x="2" y="2" width="28" height="28" rx="4" fill="#326CE5"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">Ing</text>',
-    deployment:   '<rect x="2" y="2" width="28" height="28" rx="4" fill="#326CE5"/><text x="16" y="20" text-anchor="middle" font-size="7" font-weight="bold" fill="#fff" font-family="sans-serif">Dep</text>',
-  },
-  generic: {
-    server:       '<rect x="2" y="4" width="28" height="24" rx="3" fill="#6B7280" stroke="#4B5563" stroke-width="1"/><line x1="6" y1="10" x2="26" y2="10" stroke="#9CA3AF" stroke-width="1"/><line x1="6" y1="16" x2="26" y2="16" stroke="#9CA3AF" stroke-width="1"/><circle cx="24" cy="7" r="1.5" fill="#34D399"/>',
-    database:     '<ellipse cx="16" cy="8" rx="12" ry="5" fill="#6B7280" stroke="#4B5563" stroke-width="1"/><rect x="4" y="8" width="24" height="16" fill="#6B7280" stroke="#4B5563" stroke-width="1"/><ellipse cx="16" cy="24" rx="12" ry="5" fill="#6B7280" stroke="#4B5563" stroke-width="1"/><ellipse cx="16" cy="8" rx="12" ry="5" fill="#9CA3AF"/>',
-    cache:        '<rect x="2" y="2" width="28" height="28" rx="4" fill="#F59E0B"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">Cache</text>',
-    queue:        '<rect x="2" y="6" width="28" height="20" rx="3" fill="#8B5CF6"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">Queue</text>',
-    user:         '<circle cx="16" cy="10" r="6" fill="#6B7280"/><path d="M6 28 Q6 20 16 20 Q26 20 26 28" fill="#6B7280"/>',
-    loadbalancer: '<rect x="2" y="2" width="28" height="28" rx="4" fill="#8C4FFF"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">LB</text>',
-    firewall:     '<rect x="2" y="2" width="28" height="28" rx="4" fill="#EF4444"/><text x="16" y="20" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff" font-family="sans-serif">FW</text>',
-    dns:          '<rect x="2" y="2" width="28" height="28" rx="4" fill="#06B6D4"/><text x="16" y="20" text-anchor="middle" font-size="9" font-weight="bold" fill="#fff" font-family="sans-serif">DNS</text>',
-  },
-};
-
-function getBuiltinIcon(provider, icon) {
-  const p = BUILTIN_ICONS[provider];
-  return p ? (p[icon] || null) : null;
-}
-
 export function parseDSL(input) {
   const lines = input.split('\n');
   const ir = {
@@ -111,11 +68,6 @@ export function parseDSL(input) {
       const node = { id, label };
       if (spec.provider) node.provider = spec.provider;
       if (spec.icon) node.icon = spec.icon;
-      // Auto-resolve built-in icons for playground
-      if (spec.provider && spec.icon) {
-        const svg = getBuiltinIcon(spec.provider, spec.icon);
-        if (svg) node.icon_svg = svg;
-      }
       ir.nodes.push(node);
     }
     return id;
