@@ -1,0 +1,31 @@
+# Rust
+target/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+*.so
+*.pyd
+*.pdb
+*.dll
+
+# WASM build output
+docs/pkg/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Generated output (keep examples/*.svg)
+*.png

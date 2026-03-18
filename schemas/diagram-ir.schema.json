@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Archflow Diagram IR",
+  "description": "Language-neutral intermediate representation for architecture diagrams",
+  "type": "object",
+  "required": ["version", "nodes", "edges"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "direction": { "type": "string", "enum": ["TB", "LR"], "default": "TB" },
+        "theme": { "type": "string", "default": "default" }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "provider": { "type": "string" },
+          "icon": { "type": "string" },
+          "style": { "$ref": "#/$defs/style" }
+        }
+      }
+    },
+    "clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "children"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "children": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "style": { "$ref": "#/$defs/style" }
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "label": { "type": "string" },
+          "style": { "$ref": "#/$defs/style" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "style": {
+      "type": "object",
+      "properties": {
+        "fill": { "type": "string" },
+        "stroke": { "type": "string" },
+        "stroke_width": { "type": "number" },
+        "stroke_dasharray": { "type": "string" },
+        "font_size": { "type": "number" },
+        "font_color": { "type": "string" }
+      }
+    }
+  }
+}

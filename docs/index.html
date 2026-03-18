@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Archflow - Diagram as Code</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- CodeMirror 5 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+
+  <!-- Archflow CM mode -->
+  <script src="js/cm-archflow.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo">arch<span>flow</span></a>
+    <nav>
+      <a href="#" data-nav="home" class="active">Home</a>
+      <a href="#" data-nav="playground">Playground</a>
+      <a href="#" data-nav="docs">Docs</a>
+    </nav>
+    <div class="header-right">
+      <a href="https://github.com/soulee-dev/archflow" class="github-link" target="_blank">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
+  </header>
+
+  <!-- Home -->
+  <section id="home" class="section active">
+    <div class="hero">
+      <h1>Diagram as Code,<br><em>Beautiful by Default</em></h1>
+      <p>
+        Write architecture diagrams in Python. Render with a Rust-powered engine.
+        Get publication-ready SVG output, every time.
+      </p>
+      <div class="cta-group">
+        <a href="#" data-nav="playground" class="btn btn-primary">Try Playground</a>
+        <a href="#" data-nav="docs" class="btn btn-secondary">Read Docs</a>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature-card">
+        <div class="icon">&#x1f310;</div>
+        <h3>Language Neutral</h3>
+        <p>JSON IR works from Python, TypeScript, Kotlin, or any language. Write once, render anywhere.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">&#x26a1;</div>
+        <h3>Rust-Powered</h3>
+        <p>Deterministic layout and rendering. Same input always produces the exact same output.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">&#x1f3a8;</div>
+        <h3>Beautiful by Default</h3>
+        <p>Clean, professional themes out of the box. No design work needed for presentation-ready diagrams.</p>
+      </div>
+    </div>
+
+    <div class="code-preview">
+      <h2>Simple DSL</h2>
+      <pre class="code-block"><span class="cm"># Just describe your architecture</span>
+<span class="kw">title:</span> <span class="str">Web Service</span>
+<span class="kw">direction:</span> <span class="str">LR</span>
+
+Client <span class="fn">>></span> Load Balancer <span class="fn">>></span> API Server <span class="fn">>></span> Database
+
+<span class="kw">cluster</span> AWS VPC {
+  Load Balancer
+  API Server
+  Database
+}</pre>
+    </div>
+
+    <div class="code-preview">
+      <h2>Or use Python</h2>
+      <pre class="code-block"><span class="kw">from</span> archflow <span class="kw">import</span> Diagram, Node, Cluster
+
+<span class="kw">with</span> <span class="fn">Diagram</span>(<span class="str">"Web Service"</span>, direction=<span class="str">"LR"</span>) <span class="kw">as</span> d:
+    <span class="kw">with</span> <span class="fn">Cluster</span>(<span class="str">"vpc"</span>, <span class="str">"AWS VPC"</span>):
+        web = <span class="fn">Node</span>(<span class="str">"web"</span>, <span class="str">"Web Server"</span>)
+        app = <span class="fn">Node</span>(<span class="str">"app"</span>, <span class="str">"App Server"</span>)
+        db  = <span class="fn">Node</span>(<span class="str">"db"</span>, <span class="str">"Database"</span>)
+    web >> app >> db
+    d.save_svg(<span class="str">"output.svg"</span>)</pre>
+    </div>
+  </section>
+
+  <!-- Playground -->
+  <section id="playground" class="section">
+    <div class="playground-toolbar">
+      <button class="toolbar-btn mode-toggle" id="mode-btn" title="Switch to JSON mode">DSL</button>
+      <select id="example-select">
+        <option value="" disabled>Load example...</option>
+      </select>
+      <button class="toolbar-btn primary" id="render-btn">Render</button>
+      <button class="toolbar-btn" id="download-btn">Download SVG</button>
+      <span id="status" class="status">Loading...</span>
+    </div>
+    <div class="playground-content">
+      <div class="editor-panel">
+        <textarea id="editor-textarea"></textarea>
+      </div>
+      <div class="preview-panel">
+        <div id="svg-preview"></div>
+        <div class="zoom-controls">
+          <button id="zoom-in" title="Zoom in">+</button>
+          <span id="zoom-level">100%</span>
+          <button id="zoom-out" title="Zoom out">&minus;</button>
+          <button id="zoom-fit" title="Fit to view">Fit</button>
+          <button id="zoom-reset" title="Reset zoom">1:1</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Docs -->
+  <section id="docs" class="section">
+    <div class="docs-content">
+      <h2>Documentation</h2>
+      <p>Archflow is a Diagram-as-Code platform that turns code into beautiful architecture diagrams.</p>
+
+      <h3>DSL Syntax (Playground)</h3>
+      <p>Write diagrams in a simple, readable syntax:</p>
+<pre># Metadata
+title: My Architecture
+direction: LR
+
+# Edges (use >> or ->)
+Client >> API Gateway >> Auth Service
+API Gateway >> User Service
+
+# Edge with label
+Auth Service >> Database : SQL queries
+
+# Clusters (groups)
+cluster Kubernetes {
+  API Gateway
+  Auth Service
+  User Service
+}
+
+cluster Storage {
+  Database
+  Redis
+}</pre>
+      <p>Nodes are automatically created when referenced in edges or clusters. Node IDs are generated from labels.</p>
+
+      <h3>Quick Start (Python)</h3>
+<pre>pip install archflow
+
+from archflow import Diagram, Node, Cluster
+
+with Diagram("My Service", direction="LR") as d:
+    with Cluster("vpc", "VPC"):
+        web = Node("web", "Web Server")
+        db  = Node("db", "Database")
+    web >> db
+    d.save_svg("output.svg")</pre>
+
+      <h3>CLI Usage</h3>
+<pre>archflow render diagram.json -o output.svg</pre>
+
+      <h3>JSON IR Schema</h3>
+      <p>The core contract between any DSL and the rendering engine.</p>
+
+      <table class="schema-table">
+        <thead>
+          <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>version</code></td><td>string</td><td>Yes</td><td>Schema version (<code>"1.0.0"</code>)</td></tr>
+          <tr><td><code>metadata.title</code></td><td>string</td><td>No</td><td>Diagram title</td></tr>
+          <tr><td><code>metadata.direction</code></td><td>string</td><td>No</td><td><code>"TB"</code> (top-bottom) or <code>"LR"</code> (left-right)</td></tr>
+          <tr><td><code>metadata.theme</code></td><td>string</td><td>No</td><td>Theme name (default: <code>"default"</code>)</td></tr>
+          <tr><td><code>nodes[]</code></td><td>array</td><td>Yes</td><td>List of node definitions</td></tr>
+          <tr><td><code>nodes[].id</code></td><td>string</td><td>Yes</td><td>Unique node identifier</td></tr>
+          <tr><td><code>nodes[].label</code></td><td>string</td><td>Yes</td><td>Display label</td></tr>
+          <tr><td><code>edges[]</code></td><td>array</td><td>Yes</td><td>List of edge definitions</td></tr>
+          <tr><td><code>edges[].from</code></td><td>string</td><td>Yes</td><td>Source node ID</td></tr>
+          <tr><td><code>edges[].to</code></td><td>string</td><td>Yes</td><td>Target node ID</td></tr>
+          <tr><td><code>edges[].label</code></td><td>string</td><td>No</td><td>Edge label text</td></tr>
+          <tr><td><code>clusters[]</code></td><td>array</td><td>No</td><td>List of cluster (group) definitions</td></tr>
+          <tr><td><code>clusters[].id</code></td><td>string</td><td>Yes</td><td>Unique cluster identifier</td></tr>
+          <tr><td><code>clusters[].label</code></td><td>string</td><td>Yes</td><td>Display label</td></tr>
+          <tr><td><code>clusters[].children</code></td><td>string[]</td><td>Yes</td><td>List of child node/cluster IDs</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Style Overrides</h3>
+      <p>Any node, edge, or cluster can include an optional <code>style</code> object:</p>
+<pre>{
+  "style": {
+    "fill": "#FF6B6B",
+    "stroke": "#C92A2A",
+    "stroke_width": 2,
+    "stroke_dasharray": "5,5",
+    "font_color": "#FFFFFF"
+  }
+}</pre>
+
+      <h3>Architecture</h3>
+<pre>Python DSL / TS DSL / Any Language
+          |
+     Diagram IR (JSON)
+          |
+      Rust Core Engine
+   +------+------+
+   |      |      |
+Layout  Theme  Scene Graph
+          |
+      Renderer
+   +------+------+------+
+   |      |      |      |
+  SVG    PNG    CLI    WASM
+                        |
+                    React / Web</pre>
+    </div>
+  </section>
+
+  <!-- App -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

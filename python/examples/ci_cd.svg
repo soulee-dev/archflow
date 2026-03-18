@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 1460" width="360" height="1460">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#667085"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <g id="ci">
+    <rect x="60" y="150" width="240" height="650" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="76" y="170" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">CI Pipeline</text>
+  </g>
+  <g id="cd">
+    <rect x="60" y="790" width="240" height="490" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="76" y="810" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">CD Pipeline</text>
+  </g>
+  <polyline points="180,120 180,220" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,280 180,380" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,440 180,540" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,600 180,700" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,760 180,860" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,920 180,1020" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,1080 180,1180" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="180,1240 180,1340" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <g id="dev">
+    <rect x="100" y="60" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="95" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Developer</text>
+  </g>
+  <g id="github">
+    <rect x="100" y="220" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="255" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">GitHub</text>
+  </g>
+  <g id="build">
+    <rect x="100" y="380" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="415" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Build</text>
+  </g>
+  <g id="test">
+    <rect x="100" y="540" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="575" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Test</text>
+  </g>
+  <g id="scan">
+    <rect x="100" y="700" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="735" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Security Scan</text>
+  </g>
+  <g id="registry">
+    <rect x="100" y="860" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="895" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Container Registry</text>
+  </g>
+  <g id="staging">
+    <rect x="100" y="1020" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="1055" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Staging</text>
+  </g>
+  <g id="prod">
+    <rect x="100" y="1180" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="1215" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Production</text>
+  </g>
+  <g id="monitor">
+    <rect x="100" y="1340" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="1375" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Monitoring</text>
+  </g>
+</svg>

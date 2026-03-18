@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 930" width="840" height="930">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#667085"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <g id="producers">
+    <rect x="60" y="60" width="240" height="490" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="76" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Event Producers</text>
+  </g>
+  <g id="broker">
+    <rect x="300" y="60" width="480" height="650" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="316" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Event Broker</text>
+  </g>
+  <g id="consumers">
+    <rect x="540" y="60" width="240" height="810" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="556" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Event Consumers</text>
+  </g>
+  <polyline points="260,480 340,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="260,320 340,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="260,160 340,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,640" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,480" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,800" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <g id="web">
+    <rect x="100" y="450" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="485" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Web API</text>
+  </g>
+  <g id="mobile">
+    <rect x="100" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Mobile API</text>
+  </g>
+  <g id="iot">
+    <rect x="100" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">IoT Devices</text>
+  </g>
+  <g id="bus">
+    <rect x="340" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="420" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Event Bus</text>
+  </g>
+  <g id="schema">
+    <rect x="580" y="610" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="645" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Schema Registry</text>
+  </g>
+  <g id="notify">
+    <rect x="580" y="450" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="485" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Notification</text>
+  </g>
+  <g id="analytics">
+    <rect x="580" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Analytics</text>
+  </g>
+  <g id="billing">
+    <rect x="580" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Billing</text>
+  </g>
+  <g id="search">
+    <rect x="580" y="770" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="805" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Search Index</text>
+  </g>
+</svg>

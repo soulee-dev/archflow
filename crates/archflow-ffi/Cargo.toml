@@ -1,0 +1,14 @@
+[package]
+name = "archflow-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+description = "Python FFI bindings for Archflow"
+
+[lib]
+name = "_archflow_rust"
+crate-type = ["cdylib"]
+
+[dependencies]
+archflow-core.workspace = true
+pyo3 = { version = "0.23", features = ["extension-module"] }

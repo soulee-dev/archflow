@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1560 610" width="1560" height="610">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#667085"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <g id="sources">
+    <rect x="60" y="60" width="240" height="490" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="76" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Data Sources</text>
+  </g>
+  <g id="ingest">
+    <rect x="300" y="60" width="240" height="330" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="316" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Ingestion</text>
+  </g>
+  <g id="process">
+    <rect x="540" y="60" width="240" height="330" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="556" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Processing</text>
+  </g>
+  <g id="store">
+    <rect x="780" y="60" width="480" height="330" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="796" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Storage</text>
+  </g>
+  <g id="serve">
+    <rect x="1020" y="60" width="480" height="170" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="1036" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Serving</text>
+  </g>
+  <polyline points="260,160 340,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="260,480 340,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="260,320 340,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,160 580,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="500,320 580,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="740,320 820,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="740,160 820,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="980,160 1060,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="1220,320 1300,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="980,160 1060,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <g id="api_log">
+    <rect x="100" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">API Logs</text>
+  </g>
+  <g id="click">
+    <rect x="100" y="450" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="485" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Clickstream</text>
+  </g>
+  <g id="cdc">
+    <rect x="100" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="180" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">DB CDC</text>
+  </g>
+  <g id="kafka">
+    <rect x="340" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="420" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Kafka</text>
+  </g>
+  <g id="kinesis">
+    <rect x="340" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="420" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Kinesis</text>
+  </g>
+  <g id="spark">
+    <rect x="580" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Spark</text>
+  </g>
+  <g id="flink">
+    <rect x="580" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="660" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Flink</text>
+  </g>
+  <g id="s3">
+    <rect x="820" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="900" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">S3 Data Lake</text>
+  </g>
+  <g id="redshift">
+    <rect x="1060" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="1140" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Redshift</text>
+  </g>
+  <g id="dashboard">
+    <rect x="1300" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="1380" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Dashboard</text>
+  </g>
+  <g id="ml">
+    <rect x="1060" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="1140" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">ML Models</text>
+  </g>
+</svg>

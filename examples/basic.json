@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "title": "Web Service",
+    "direction": "LR",
+    "theme": "default"
+  },
+  "nodes": [
+    { "id": "web", "label": "Web Server" },
+    { "id": "app", "label": "App Server" },
+    { "id": "db", "label": "Database" }
+  ],
+  "clusters": [
+    { "id": "vpc", "label": "VPC", "children": ["web", "app", "db"] }
+  ],
+  "edges": [
+    { "from": "web", "to": "app" },
+    { "from": "app", "to": "db" }
+  ]
+}

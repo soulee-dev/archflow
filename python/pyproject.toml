@@ -1,0 +1,16 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "archflow"
+version = "0.1.0"
+description = "Diagram-as-Code platform with Rust core engine"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+urls = { Repository = "https://github.com/soulee-dev/archflow" }
+
+[tool.maturin]
+manifest-path = "../crates/archflow-ffi/Cargo.toml"
+python-source = "."
+module-name = "archflow._archflow_rust"

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 450" width="1040" height="450">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#667085"/>
+    </marker>
+  </defs>
+  <rect width="100%" height="100%" fill="#FFFFFF"/>
+  <g id="vpc">
+    <rect x="260" y="60" width="240" height="170" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="276" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">AWS VPC</text>
+  </g>
+  <g id="app_tier">
+    <rect x="500" y="60" width="240" height="330" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="516" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Application Tier</text>
+  </g>
+  <g id="data_tier">
+    <rect x="740" y="60" width="240" height="330" rx="12" fill="#F5F7FA" stroke="#D0D5DD" stroke-width="1.5"/>
+    <text x="756" y="80" font-size="12" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#475467" text-anchor="start" dominant-baseline="middle">Data Tier</text>
+  </g>
+  <polyline points="220,160 300,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="460,160 540,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="460,160 540,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="700,160 780,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="700,320 780,320" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="700,160 780,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <polyline points="700,320 780,160" fill="none" stroke="#667085" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <g id="client">
+    <rect x="60" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="140" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Client</text>
+  </g>
+  <g id="lb">
+    <rect x="300" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="380" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Load Balancer</text>
+  </g>
+  <g id="api1">
+    <rect x="540" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="620" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">API Server 1</text>
+  </g>
+  <g id="api2">
+    <rect x="540" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="620" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">API Server 2</text>
+  </g>
+  <g id="db">
+    <rect x="780" y="290" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="860" y="325" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">PostgreSQL</text>
+  </g>
+  <g id="cache">
+    <rect x="780" y="130" width="160" height="60" rx="8" fill="#4A90D9" stroke="#2C5F8A" stroke-width="1.5"/>
+    <text x="860" y="165" font-size="14" font-family="Inter, system-ui, -apple-system, sans-serif" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">Redis</text>
+  </g>
+</svg>
