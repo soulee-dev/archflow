@@ -1,0 +1,21 @@
+title: Microservices
+direction: LR
+theme: sunset
+
+Mobile App >> Gateway
+Web App >> Gateway
+
+cluster Kubernetes {
+  Gateway >> Auth
+  Gateway >> Users >> PostgreSQL
+  Gateway >> Orders >> PostgreSQL
+  Orders >> Payments
+  Orders >> Kafka
+  Auth >> Redis
+}
+
+cluster Data Layer {
+  PostgreSQL
+  Redis
+  Kafka
+}

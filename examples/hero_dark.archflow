@@ -1,0 +1,16 @@
+title: AWS Web Service
+direction: LR
+theme: dark
+icon_size: 64
+spacing: 80
+use aws
+
+aws:cloudfront CDN >> aws:elb Load Balancer >> aws:ecs App Server >> aws:rds Database
+aws:ecs App Server >> aws:elasticache Cache
+
+cluster:aws:vpc Production VPC {
+  aws:elb Load Balancer
+  aws:ecs App Server
+  aws:rds Database
+  aws:elasticache Cache
+}

@@ -22,25 +22,10 @@
 
 ---
 
-**Stop dragging boxes around.** Write your architecture in Python or DSL, get publication-ready SVGs rendered by a Rust engine in milliseconds.
 
-```python
-from archflow import Diagram, Node, Cluster
-
-with Diagram("Web Service", direction="LR") as d:
-    client = Node("client", "Client")
-
-    with Cluster("vpc", "VPC"):
-        lb = Node("lb", "Load Balancer")
-        api = Node("api", "API Server")
-        db = Node("db", "PostgreSQL")
-
-    client >> lb >> api >> db
-    d.save_svg("architecture.svg")
-```
 
 <p align="center">
-  <img src="examples/web_service.svg" alt="Web Service Architecture" width="720">
+  <img src="examples/hero_default.svg" alt="Production AWS Architecture" width="800">
 </p>
 
 ## Why Archflow?
@@ -80,36 +65,107 @@ cd bindings/python && pip install maturin && maturin develop
 cargo build --release -p archflow-cli
 ```
 
-### Your first diagram
+## Examples
+
+### AWS with Provider Icons
+
+300+ official AWS icons. Provider-aware VPC clusters with dashed borders.
+
+```
+title: AWS Web Service
+direction: LR
+icon_size: 64
+spacing: 80
+use aws
+
+aws:cloudfront CDN >> aws:elb Load Balancer >> aws:ecs App Server >> aws:rds Database
+aws:ecs App Server >> aws:elasticache Cache
+
+cluster:aws:vpc Production VPC {
+  aws:elb Load Balancer
+  aws:ecs App Server
+  aws:rds Database
+  aws:elasticache Cache
+}
+```
+
+<p align="center">
+  <img src="examples/hero_default.svg" alt="AWS Web Service" width="800">
+</p>
+
+### Dark Theme
+
+Same diagram, one line change: `theme: dark`.
+
+<p align="center">
+  <img src="examples/hero_dark.svg" alt="AWS Dark Theme" width="800">
+</p>
+
+### Serverless (Ocean Theme)
+
+```
+title: Serverless API
+direction: LR
+theme: ocean
+icon_size: 64
+use aws
+
+aws:api-gateway API Gateway >> aws:lambda Auth >> aws:lambda Handler >> aws:dynamodb DynamoDB
+aws:lambda Handler >> aws:sqs Queue >> aws:lambda Worker
+aws:lambda Worker >> aws:dynamodb DynamoDB
+```
+
+<p align="center">
+  <img src="examples/serverless_ocean.svg" alt="Serverless Ocean Theme" width="800">
+</p>
+
+### Microservices (Sunset Theme)
+
+No provider icons needed — plain nodes with clusters work too.
 
 ```python
 from archflow import Diagram, Node, Cluster
 
-with Diagram("Microservices", direction="LR") as d:
+with Diagram("Microservices", direction="LR", theme="sunset") as d:
     mobile = Node("mobile", "Mobile App")
-
-    with Cluster("k8s", "Kubernetes Cluster"):
-        gw = Node("gw", "API Gateway")
+    web = Node("web", "Web App")
+    with Cluster("k8s", "Kubernetes"):
+        gw = Node("gw", "Gateway")
         with Cluster("svc", "Services"):
             auth = Node("auth", "Auth")
-            user = Node("user", "User")
-            order = Node("order", "Order")
-
-    mobile >> gw >> auth
-    gw >> user
-    gw >> order
-
+            user = Node("user", "Users")
+            order = Node("order", "Orders")
+            payment = Node("pay", "Payments")
+    with Cluster("data", "Data Layer"):
+        pg = Node("pg", "PostgreSQL")
+        redis = Node("redis", "Redis")
+        kafka = Node("kafka", "Kafka")
+    mobile >> gw
+    web >> gw
+    gw >> auth
+    gw >> user >> pg
+    gw >> order >> pg
+    order >> payment
+    order >> kafka
+    auth >> redis
     d.save_svg("microservices.svg")
 ```
 
+<p align="center">
+  <img src="examples/microservices_sunset.svg" alt="Microservices Sunset Theme" width="800">
+</p>
+
 ### DSL (Playground)
 
+No Python needed. Write directly in the DSL:
+
 ```
-title: Web Service
+title: AWS Web Service
 direction: LR
 use aws
 
 aws:ELB Load Balancer >> aws:EC2 Web Server >> aws:RDS Database
+aws:EC2 Web Server >> aws:S3 Static Assets
 
 cluster:aws:vpc Production VPC {
   aws:EC2 Web Server
@@ -117,59 +173,7 @@ cluster:aws:vpc Production VPC {
 }
 ```
 
-### CLI
-
-```bash
-archflow render diagram.json -o output.svg
-```
-
-## Examples
-
-### Data Pipeline
-
-```python
-from archflow import Diagram, Node, Cluster
-
-with Diagram("Data Pipeline", direction="LR") as d:
-    with Cluster("sources", "Data Sources"):
-        api = Node("api", "API Logs")
-        click = Node("click", "Clickstream")
-
-    with Cluster("process", "Processing"):
-        kafka = Node("kafka", "Kafka")
-        spark = Node("spark", "Spark")
-
-    with Cluster("store", "Storage"):
-        s3 = Node("s3", "S3 Data Lake")
-        redshift = Node("redshift", "Redshift")
-
-    api >> kafka >> spark >> s3 >> redshift
-    click >> kafka
-
-    d.save_svg("data_pipeline.svg")
-```
-
-<p align="center">
-  <img src="examples/data_pipeline.svg" alt="Data Pipeline" width="720">
-</p>
-
-### AWS with Provider Icons
-
-```python
-from archflow import Diagram
-from archflow.providers.aws import EC2, RDS, ELB, S3, VPC
-
-with Diagram("AWS Architecture") as d:
-    with VPC("Production"):
-        lb = ELB("Load Balancer")
-        web = EC2("Web Server")
-        db = RDS("Database")
-        storage = S3("Assets")
-
-    lb >> web >> db
-    web >> storage
-    d.save_svg("aws.svg")
-```
+Try it live in the [Playground](https://soulee-dev.github.io/archflow/).
 
 ## Providers
 
@@ -178,7 +182,7 @@ Icons are loaded from the [archflow-icons](https://github.com/soulee-dev/archflo
 ### AWS (307 nodes, 11 clusters)
 
 ```python
-from archflow.providers.aws import EC2, Lambda, RDS, S3, DynamoDB, ELB, CloudFront, SQS, SNS
+from archflow.providers.aws import EC2, Lambda, RDS, S3, Dynamodb, ELB, Cloudfront, SQS, SNS
 ```
 
 Cluster types: `Region`, `VPC`, `Subnet`
@@ -201,20 +205,19 @@ Cluster types: `Cluster`, `Namespace`
 
 ## Themes
 
-6 built-in themes:
+6 built-in themes, fully customizable:
+
+| Theme | Style |
+|-------|-------|
+| `default` | Professional, colorful palette |
+| `dark` | Dark background, Tokyonight-inspired |
+| `ocean` | Blue/cyan tones |
+| `sunset` | Warm orange/red tones |
+| `forest` | Green tones |
+| `minimal` | Clean outlines, no shadows |
 
 ```python
-with Diagram("My Diagram", theme="dark") as d:      # dark mode
-with Diagram("My Diagram", theme="ocean") as d:      # blue tones
-with Diagram("My Diagram", theme="minimal") as d:    # clean outlines
-with Diagram("My Diagram", theme="sunset") as d:     # warm tones
-with Diagram("My Diagram", theme="forest") as d:     # green tones
-with Diagram("My Diagram", theme="default") as d:    # professional
-```
-
-Custom theme overrides:
-
-```python
+# Custom theme overrides
 with Diagram("Custom", custom_theme={
     "background": "#0D1117",
     "node_palette": [{"fill": "#58A6FF", "stroke": "#388BFD"}],
@@ -248,22 +251,6 @@ with Diagram("Custom", custom_theme={
 | `bindings/wasm` | WebAssembly build for the browser playground |
 | `bindings/python` | Python SDK (Diagram, Node, Cluster, providers) |
 | `apps/vscode` | VS Code extension |
-
-### JSON IR
-
-The language-neutral intermediate representation means you can generate diagrams from **any language**:
-
-```json
-{
-  "version": "1.0.0",
-  "metadata": { "title": "Web Service", "direction": "LR", "theme": "default" },
-  "nodes": [
-    { "id": "web", "label": "Web Server" },
-    { "id": "db", "label": "Database" }
-  ],
-  "edges": [{ "from": "web", "to": "db" }]
-}
-```
 
 ## Development
 

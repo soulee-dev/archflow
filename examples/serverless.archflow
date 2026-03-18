@@ -1,0 +1,10 @@
+title: Serverless API
+direction: LR
+theme: ocean
+icon_size: 64
+spacing: 80
+use aws
+
+aws:api-gateway API Gateway >> aws:lambda Auth >> aws:lambda Handler >> aws:dynamodb DynamoDB
+aws:lambda Handler >> aws:sqs Queue >> aws:lambda Worker
+aws:lambda Worker >> aws:dynamodb DynamoDB
