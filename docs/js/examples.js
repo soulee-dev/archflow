@@ -55,6 +55,43 @@ cluster:gcp:vpc Production VPC {
 }`,
   },
   {
+    name: "Kubernetes (Icons)",
+    dsl: `title: Kubernetes Microservices
+direction: LR
+
+k8s:ingress Ingress >> k8s:service API Service >> k8s:deployment API Pods
+k8s:service API Service >> k8s:config-map Config
+k8s:deployment API Pods >> k8s:service DB Service >> k8s:stateful-set PostgreSQL
+k8s:deployment API Pods >> k8s:service Cache Service >> k8s:deployment Redis
+k8s:deployment API Pods >> k8s:secret Secrets
+
+cluster:k8s:cluster Production Cluster {
+  k8s:ingress Ingress
+  k8s:service API Service
+  k8s:deployment API Pods
+  k8s:service DB Service
+  k8s:stateful-set PostgreSQL
+  k8s:service Cache Service
+  k8s:deployment Redis
+  k8s:config-map Config
+  k8s:secret Secrets
+}
+
+cluster:k8s:namespace App Namespace {
+  k8s:service API Service
+  k8s:deployment API Pods
+  k8s:config-map Config
+  k8s:secret Secrets
+}
+
+cluster:k8s:namespace Data Namespace {
+  k8s:service DB Service
+  k8s:stateful-set PostgreSQL
+  k8s:service Cache Service
+  k8s:deployment Redis
+}`,
+  },
+  {
     name: "CI/CD Pipeline",
     dsl: `title: CI/CD Pipeline
 direction: TB
