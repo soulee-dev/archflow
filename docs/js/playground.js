@@ -228,11 +228,13 @@ function fitToView() {
   const vb = svgEl.getAttribute('viewBox');
   if (!vb) return;
   const [, , vw, vh] = vb.split(/\s+/).map(Number);
+  if (!vw || !vh) return;
 
   const pw = panel.clientWidth - 48;
   const ph = panel.clientHeight - 48;
 
   scale = Math.min(pw / vw, ph / vh, 1.5);
+  scale = Math.max(scale, 0.1); // never go below 10%
   panX = (panel.clientWidth - vw * scale) / 2;
   panY = (panel.clientHeight - vh * scale) / 2;
 
@@ -361,8 +363,8 @@ async function render() {
       svgEl.style.display = 'block';
     }
 
-    // Fit on first render
-    setTimeout(fitToView, 10);
+    // Fit after SVG is fully laid out
+    requestAnimationFrame(() => requestAnimationFrame(fitToView));
   } catch (e) {
     setStatus(e.toString(), true);
   }
