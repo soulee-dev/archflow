@@ -1,0 +1,55 @@
+{
+  "name": "archflow",
+  "displayName": "Archflow",
+  "description": "Language support for Archflow DSL (.archflow files)",
+  "version": "0.1.0",
+  "publisher": "soulee-dev",
+  "repository": "https://github.com/soulee-dev/archflow",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Programming Languages"],
+  "activationEvents": [
+    "onLanguage:archflow"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "archflow",
+        "aliases": ["Archflow", "archflow"],
+        "extensions": [".archflow"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "archflow",
+        "scopeName": "source.archflow",
+        "path": "./syntaxes/archflow.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Archflow",
+      "properties": {
+        "archflow.lsp.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to archflow-lsp binary. If empty, uses 'archflow-lsp' from PATH."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  }
+}
