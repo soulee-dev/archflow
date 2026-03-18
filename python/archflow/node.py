@@ -55,6 +55,8 @@ class Node:
             d["provider"] = self.provider
         if self.icon:
             d["icon"] = self.icon
+        if getattr(self, "icon_svg", None):
+            d["icon_svg"] = self.icon_svg
         if self.style:
             d["style"] = self.style
         return d

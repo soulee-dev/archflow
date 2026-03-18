@@ -49,22 +49,32 @@ class Diagram:
         return json.dumps(self.to_dict(), indent=indent, ensure_ascii=False)
 
     def render_svg(self) -> str:
-        """Render diagram to SVG string using the Rust core engine."""
+        """Render diagram to SVG string using the Rust core engine.
+
+        Icons are resolved before passing to the Rust renderer.
+        """
+        from archflow.resolver import IconResolver
+
+        ir_dict = self.to_dict()
+        resolver = IconResolver()
+        ir_dict = resolver.resolve(ir_dict)
+        json_str = json.dumps(ir_dict, ensure_ascii=False)
+
         try:
             from archflow._archflow_rust import render_svg
 
-            return render_svg(self.to_json())
+            return render_svg(json_str)
         except ImportError:
             # Fallback: use CLI if native module not available
-            return self._render_via_cli()
+            return self._render_via_cli(json_str=json_str)
 
-    def _render_via_cli(self) -> str:
+    def _render_via_cli(self, json_str: str = None) -> str:
         """Fallback renderer using the CLI binary."""
         import os
         import tempfile
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
-            f.write(self.to_json())
+            f.write(json_str or self.to_json())
             json_path = f.name
 
         svg_path = json_path.replace(".json", ".svg")

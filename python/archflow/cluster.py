@@ -4,10 +4,14 @@ from archflow._context import get_current_diagram, pop_cluster, push_cluster
 
 
 class Cluster:
-    def __init__(self, id: str, label: str = None, **style):
+    def __init__(
+        self, id: str, label: str = None, *, provider: str = None, cluster_type: str = None, **style
+    ):
         self.id = id
         self.label = label or id
         self.children = []
+        self.provider = provider
+        self.cluster_type = cluster_type
         self.style = style if style else None
 
         # Auto-register with current diagram
@@ -31,6 +35,10 @@ class Cluster:
             "label": self.label,
             "children": self.children,
         }
+        if self.provider:
+            d["provider"] = self.provider
+        if self.cluster_type:
+            d["cluster_type"] = self.cluster_type
         if self.style:
             d["style"] = self.style
         return d
