@@ -64,7 +64,8 @@ export function initPlayground(wasmModule) {
       if (mode === 'dsl') {
         editor.setValue(ex.dsl);
       } else {
-        const ir = parseDSL(ex.dsl);
+        const json = parseDslFn(ex.dsl);
+        const ir = JSON.parse(json);
         editor.setValue(JSON.stringify(ir, null, 2));
       }
     }
