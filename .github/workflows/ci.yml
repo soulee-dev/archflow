@@ -35,7 +35,7 @@ jobs:
         run: pip install ruff
 
       - name: Ruff check
-        run: ruff check bindings/python/
+        run: ruff check packages/python/
 
       - name: Ruff format check
-        run: ruff format --check bindings/python/
+        run: ruff format --check packages/python/

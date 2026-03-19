@@ -3,7 +3,7 @@ requires = ["maturin>=1.0,<2.0"]
 build-backend = "maturin"
 
 [project]
-name = "archflow"
+name = "archflow-py"
 version = "0.1.0"
 description = "Diagram-as-Code platform with Rust core engine"
 requires-python = ">=3.9"
@@ -18,6 +18,6 @@ target-version = "py39"
 select = ["E", "F", "I", "W"]
 
 [tool.maturin]
-manifest-path = "../python-ffi/Cargo.toml"
+manifest-path = "../../bindings/python-ffi/Cargo.toml"
 python-source = "."
 module-name = "archflow._archflow_rust"

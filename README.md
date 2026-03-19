@@ -59,7 +59,7 @@
 
 ```bash
 # Python library (with native Rust FFI)
-cd bindings/python && pip install maturin && maturin develop
+cd packages/python && pip install maturin && maturin develop
 
 # CLI
 cargo build --release -p archflow-cli
@@ -249,7 +249,7 @@ with Diagram("Custom", custom_theme={
 | `crates/archflow-lsp` | Language Server Protocol for editor support |
 | `bindings/python-ffi` | Python native bindings via PyO3 |
 | `bindings/wasm` | WebAssembly build for the browser playground |
-| `bindings/python` | Python SDK (Diagram, Node, Cluster, providers) |
+| `packages/python` | Python SDK (Diagram, Node, Cluster, providers) |
 | `apps/vscode` | VS Code extension |
 
 ## Development
@@ -260,7 +260,7 @@ cargo test
 
 # Lint
 cargo clippy && cargo fmt --check
-ruff check bindings/python/ && ruff format --check bindings/python/
+ruff check packages/python/ && ruff format --check packages/python/
 
 # Build WASM for playground
 wasm-pack build bindings/wasm --target web --out-dir ../../docs/pkg
