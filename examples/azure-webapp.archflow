@@ -1,0 +1,17 @@
+title: Azure Web Application
+direction: LR
+theme: default
+icon_size: 64
+spacing: 80
+use azure
+
+azure:application-gateways App Gateway >> azure:app-services Web App >> azure:sql-database SQL Database
+azure:app-services Web App >> azure:storage-accounts Blob Storage
+azure:app-services Web App >> azure:cache-redis Redis Cache >> azure:sql-database SQL Database
+
+cluster:azure:vpc Production {
+  azure:app-services Web App
+  azure:sql-database SQL Database
+  azure:cache-redis Redis Cache
+  azure:storage-accounts Blob Storage
+}
